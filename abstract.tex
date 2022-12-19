@@ -1,0 +1,247 @@
+\documentclass[a4paper,papersize,dvipdfmx]{mtabst}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{times}
+%\usepackage{jumoline}
+\usepackage{type1cm}
+\usepackage{bm}
+\usepackage{url}
+\usepackage{subcaption}
+%\usepackage{secdot}
+%\usepackage{mystyle}
+% \usepackage{subfig} % subfigure.sty は古いので避けた方がよい．
+% \usepackage[tight]{subfigure}
+
+\pagestyle{fancy}
+
+\chead{} % ヘッダは印刷業者がつけるので記入しない
+%\chead{\sffamily \gtfamily 横浜国立大学大学院 機械システム工学コース 学位論文概要集，Vol.?，20??} % その年の指定に合わせて変更
+
+% \newcommand{\secref}[1]{\ref{#1}章}
+% \newcommand{\ssecref}[1]{\ref{#1}節}
+\newcommand{\figref}[1]{Fig.~\ref{#1}}
+% \newcommand{\tabref}[1]{表~\ref{#1}}
+\newcommand{\equref}[1]{式~(\ref{#1})}
+
+\begin{document}
+\date{}
+
+\title{光弾性法を利用したオンライン力覚センシングとその力制御への適用}
+
+\etitle{Photoelasticity-based online force distribution sensing and its application to force control}
+
+\author{
+\begin{tabular}{p{.45\linewidth}p{.45\linewidth}}
+\centering 19NA128 小濱 幹也 & \centering （主査　前田 雄介　教授）
+\end{tabular}
+}
+
+\eauthor{
+\begin{tabular}{p{.45\linewidth}p{.45\linewidth}}
+\centering 19NA128 Mikiya KOHAMA & \centering (Supervisor Prof. Yusuke MAEDA)
+\end{tabular}
+}
+
+\keywords{Photoelasticity, Tactile sensing, Force control, Polarization, Stress analysis}
+
+\begin{abstract}
+  Photoelastic materials under load visualize its stress distribution as polarized fringe patterns.
+  There have been many application cases of photoelasticity due to its unique property;
+  for example, stress distribution can be acquired experimentally.
+  I apply photoelastic analysis to force control of robots.
+  My approach can acquire detailed external force distribution exerted on a material.
+  In this paper, I introduce an online image-based stress analysis by using photoelasticity for force control.
+  I perform experiments of force distribution sensing and online force control using a 2-DoF robot and a polarization camera.
+  Experimental results show that photoelastic analysis can be applied to a simple force control task: pressing a fixed wall with specified force.
+\end{abstract}
+
+\maketitle
+%\thispagestyle{fancy}
+
+\section{序論}
+力制御はロボットの産業利用において重要な要素であり，それを実現するために力覚センサが利用されている．
+しかし，通常の力覚センサは，そのセンサ面にはたらく合力や合モーメントしか測定できない，つまり得られる情報量が少ないといえる．
+この問題に対して，本研究では光弾性を利用したオンライン力分布センシング手法を提案する．
+光弾性とは，偏光が透明かつ等方性の材料を透過するとき，その材料の応力分布に応じて複屈折させられる現象である．
+このような材料は光弾性体とよばれ，この原理により材料内の応力分布を実験的に求める光弾性法は多様な分野に応用されている~\cite{ramesh2020}．
+光弾性法により材料全体の詳細な応力分布を解析できるため，この原理を利用した外力分布センシングを考えることができる．
+よって本研究では，光弾性法を利用した力分布センシング手法を開発し，その手法を力制御に適用することを目的とする．
+光弾性法によりロボットに作用する詳細な力分布が把握できれば，より高レベルな力制御タスクが可能となる．
+また，光弾性を示す材料は数多く存在することから，材料を変えれば多様な力のレンジに対応できるという利点もある．
+
+\section{光弾性効果の観測と位相接続}
+提案手法は，ロボットの手先に四分円形状の光弾性体を取り付け，その光弾性体の境界にはたらく力分布を解析するものである．
+まず，偏光カメラにより4方向の偏光強度を撮影し，その偏光画像からDOLP~(Degree Of Linear Polarization, 直線偏光度)やAOP~(Angle Of Polarization, 偏光方向)を得る．
+\figref{fig:polarization-map}に，偏光カメラ画像およびそれをDOLP，AOPに変換した例を示す．
+一般に，DOLPやAOPは明暗を繰り返す縞模様のような分布となる．
+
+\begin{figure}[b]
+    \centering
+    \begin{minipage}[t]{0.31\linewidth}
+        \centering
+        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/polarization-image.pdf}
+        \subcaption{Camera image}
+    \end{minipage}
+    \begin{minipage}[t]{0.32\linewidth}
+        \centering
+        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/dolp.pdf}
+        \subcaption{DOLP}
+    \end{minipage}
+    \begin{minipage}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/aop.pdf}
+        \subcaption{AOP}
+    \end{minipage}
+\caption{Polarization images of the quarter-circle shaped photoelastic material}\label{fig:polarization-map}
+\end{figure}
+
+DOLPやAOPは，光弾性体の主応力差\(d\)や主応力方向\(\phi\)と以下の関係にある．
+ここで，\(\alpha\)は光弾性感度，\(t\)は材料の厚さである．
+\begin{eqnarray}\label{eq:dolp-aop-to-stress}
+    n\pm DOLP&=&\frac{2}{\pi}\alpha td\qquad (n=0,1,2,\ldots) \\
+    m+AOP&=&\phi\qquad (m=0,1,2,\ldots)
+\end{eqnarray}
+光弾性効果を撮影して得られるDOLPおよびAOPから応力情報を得るためには，\eqref{eq:dolp-aop-to-stress}における未知数や符号を決定する必要がある．
+そこで，DOLP画像の縞模様に位相接続を施すことで，\(n\)および符号を決定する．
+なお，後述の応力解析手法ではAOPをそのまま主応力方向\(\phi\)として利用可能なため，本手法ではAOPの位相接続は行わない．
+
+\section{力分布の解析}
+次に，光弾性体内の主応力和\(s\)を求める．
+以下の手法は，梅崎らの手法\cite{umezaki1987}を基本とし，評価関数と境界条件を独自に設定したものである．
+まず，材料を要素分割し，隣接する要素\(i,j\)間で成立する\eqref{eq:relationship-on-edge}のような形式の残差\(r_{ij}\)を定義する．
+ここで，添字\(i\)は要素\(i\)の値であることを表す．
+また，\(\theta_{ij}\)は要素\(i\)から\(j\)へのベクトルがx軸となす角である．
+\(F\)は応力のつり合い方程式を変形した関係式である．
+\begin{equation}\label{eq:relationship-on-edge}
+    r_{ij}:=s_j-s_i+F(d_i,\phi_i,d_j,\phi_j,\theta_{ij})\approx0
+\end{equation}
+次に，境界条件として自由境界\(\mathcal{K}\)上の適当な要素\(k\in\mathcal{K}\)において\(s_k\approx0\)と仮定する．
+これらの式を利用して，主応力和を変数とする誤差関数\(D=D(\bm{s})\)を定義する．
+\(D\)を最小化させる主応力和\(\bm{s}=[s_1,s_2,\ldots]^T\)を求める．
+この計算は以下の連立一次方程式に帰着される．
+\begin{equation}\label{eq:solve-equation}
+    \bm{A}\bm{s}=\bm{b}
+\end{equation}
+ここで，\(\bm{A}\)は要素の連結関係で決定する行列，\(\bm{b}\)は各要素の主応力差，主応力方向，位置関係で決定するベクトルである．
+
+以上の計算で得られる主応力和と，光弾性画像から得られる主応力差，主応力方向から，各応力成分を計算する．
+最後に光弾性体の境界周りの応力成分を力分布に変換して解析終了となる．
+この手法では，主応力和の計算時に要素全体の関係を考慮するので，一部の要素にノイズが混入していても誤差が累積しにくい．
+また，\(\bm{A}\)は要素の連結関係だけで決定するので，一度計算した\(\bm{A}^{-1}\)を再利用できる．
+つまり，2度目の解析以降は\(\bm{b}\)の計算と行列-ベクトル積だけで\(\bm{s}\)が求まるので，高速な解析が期待できる．
+
+% ---------------------------------------------------------------------------------------------------- %
+\section{実験および結果}
+% ---------------------------------------------------------------------------------------------------- %
+実験装置を\figref{fig:experimental-setup}に示す．
+透明ポリウレタン製の光弾性体を製作し，2自由度回転関節ロボットの手先に取り付けた．
+ロボットの横にワーク壁面を設置し，壁面は検証用の6軸力覚センサに固定した．
+ロボット下部には光源として液晶ディスプレイを，上部には偏光カメラをそれぞれ設置した．
+
+\begin{figure}[bt]
+	\centering
+	\includegraphics[width=.95\hsize,clip]{fig/abstract/experimental-setup.pdf}
+ 	\caption{Experimental setup}\label{fig:experimental-setup}
+\end{figure}
+
+\subsection{力分布の解析と光弾性感度定数の把握}
+まず，力分布の解析が可能かを検証することと，実験に利用する光弾性感度\(\alpha\)を把握することを目的とした実験を行った．
+手動で光弾性体を壁面に押し付け，そのときの力分布解析結果と力覚センサの測定値を500組記録した．
+その後，一時的に\(\alpha=1\)~[m/N]とおいて力分布を解析した．
+
+結果を\figref{fig:force-x-regression}および\figref{fig:force-distribution}に示す．
+\figref{fig:force-x-regression}の横軸は光弾性解析で得られた材料境界上の押し付け力分布を積分した値を，縦軸は力覚センサの測定値をそれぞれ表す．
+プロット点列の回帰直線は決定係数が0.76となった．
+光弾性解析の結果は力覚センサと十分に対応が取れているといえる．
+回帰直線の傾きが\(1/\alpha\)となることから，\(\alpha=4.8\times10^2\)~[m/N]と同定した．
+ただし，理想的には回帰直線は原点を通るはずであるが，\figref{fig:force-x-regression}はそうならなかった．
+また，\figref{fig:force-distribution}は，光弾性体境界上の押し付け力分布を示している．
+\figref{fig:force-x-good}のように，光弾性体と壁面の接触領域において圧縮力が大きくなる力分布となり，妥当な解析結果が得られるケースがあった一方．
+\figref{fig:force-x-bad}のように力分布の形状が乱れるケースもあった．
+
+この原因として，光源が理想的な偏光とは若干異なることや，光弾性体の残留応力が挙げられる．
+また，位相接続手法に起因する誤差や応力解析時の離散化といった，計算手法による原因も考えられる．
+
+\begin{figure}[bt]
+	\centering
+	\includegraphics[width=.55\hsize,clip]{fig/abstract/force-x-regression.pdf}
+ 	\caption{Relationship between photoelastic analysis results and measurements by the FT sensor}\label{fig:force-x-regression}
+\end{figure}
+
+\begin{figure}[bt]
+	\centering
+    \begin{minipage}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/force-x-good.pdf}
+        \subcaption{Suitable case}\label{fig:force-x-good}
+    \end{minipage}
+    \begin{minipage}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/force-x-bad.pdf}
+        \subcaption{Unsuitable case}\label{fig:force-x-bad}
+    \end{minipage}
+    \caption{Force distribution}\label{fig:force-distribution}
+\end{figure}
+
+\subsection{力制御}
+ワーク壁面を指定した力で押すという力制御タスクを実行した．
+開ループ，力覚センサPIフィードバック，光弾性PIフィードバックの3種類の制御方法を比較することで，提案手法を評価した．
+光弾性フィードバック制御では，解析で得られた力分布を積分した結果をフィードバックに利用した．
+制御周期は，光弾性効果を撮影するための露光時間を考慮して20~msとした．
+
+結果を\figref{fig:const}に示す．
+図は左から順に開ループ，力覚センサフィードバック，光弾性フィードバックの結果を表す．
+横軸は制御開始から経過した時間，縦軸は押し付け力である．
+赤線は目標手先力，黒線は力覚センサで測定された実際の力，青線は光弾性フィードバック制御時に光弾性解析で得られた力である．
+開ループ制御では0.35~Nの定常偏差が残った．
+これは，ロボットのモデル誤差，関節のガタ，サーボへの指令トルクと実際の発揮トルクとの誤差などが原因である．
+それに対して，力覚センサフィードバックでは，制御開始から1秒程度で目標値に収束した．
+光弾性フィードバックでは，手先力~(黒線)は1秒程度で収束したものの，目標値との定常偏差が0.2~Nとなった．
+これは，光弾性解析で得られた力~(青線)に含まれる誤差によるものである．
+とはいえ，開ループと比較して定常偏差が小さく抑えられたことから，光弾性フィードバックが有効にはたらいたと考えられる．
+
+以上の結果より，光弾性フィードバックは精度や制御周期の面で通常の力覚センサには及ばないものの，力制御に利用可能だと考えている．
+
+\begin{figure}[bt]
+    \centering
+    \begin{minipage}[t]{0.32\linewidth}
+        \centering
+        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/ol-const.pdf}
+        \subcaption{Open loop}\label{fig:const-feedforward}
+    \end{minipage}
+    \begin{minipage}[t]{0.32\linewidth}
+        \centering
+        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/ft-const.pdf}
+        \subcaption{FT sensor feedback}\label{fig:const-ft-feedback}
+    \end{minipage}
+    \begin{minipage}[t]{0.32\linewidth}
+        \centering
+        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/pe-const.pdf}
+        \subcaption{Photoelasticity feedback}\label{fig:const-pe-feedback}
+    \end{minipage}
+    \caption{Pressing with constant force}\label{fig:const}
+\end{figure}
+
+% \section{多峰性の接触力分布を想定した位相接続}
+% 真に驚くべきほどでもないかもしれない手法を考案したが，それをここに書くのは余白が狭すぎる
+
+% ---------------------------------------------------------------------------------------------------- %
+\section{結論}
+% ---------------------------------------------------------------------------------------------------- %
+本研究では，オンライン力制御に利用可能な光弾性解析手法を提案し，本手法が簡単な力制御タスクに適用可能であることを示した．
+今後は力分布の情報を活かせるより高度なタスクや，精度や速度面における手法の改良について検討する必要がある．
+
+%% 参考文献
+\begin{thebibliography}{9}
+  \bibitem{ramesh2020}
+  K. Ramesh and S. Sasikumar:
+  ``Digital photoelasticity: recent developments and diverse applications,''
+  Optics and Laser in Engineering, DOI: \url{https://doi.org/10.1016/j.optlaseng.2020.106186}, 2020.
+
+  \bibitem{umezaki1987}
+  梅崎栄作, 玉木保, 高崎賞:
+  ``光弾性画像解析 (第2報 任意方向釣合い式の直接積分による応力解析),''
+  日本機械学会論文集 (A編), vol.~53, no.~492, pp.~1658--1664, 1987.
+\end{thebibliography}
+
+\end{document}

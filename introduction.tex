@@ -1,0 +1,40 @@
+% 黒魔術
+\expandafter\ifx\csname ifdraft\endcsname\relax
+    \documentclass[a4paper,twoside,12pt,papersize, dvipdfmx]{iirthesis}
+    \usepackage{amsmath,amssymb,amsthm}
+    \usepackage{graphicx}
+    \usepackage{subcaption}
+    \usepackage{url}
+    \usepackage{otf}
+    \usepackage{minitoc}
+    \usepackage{bm}
+    \usepackage{amsmath,amssymb}
+    \begin{document}
+
+    \newcommand{\figref}[1]{\figurename\ref{#1}}
+    \newcommand{\tabref}[1]{\tablename\ref{#1}}
+    \renewcommand{\eqref}[1]{式~(\ref{#1})}
+    \newcommand{\chapref}[1]{\ref{#1}章}
+    \newcommand{\secref}[1]{\ref{#1}節}
+    \newcommand{\ssecref}[1]{\ref{#1}項}
+    \newcommand{\appref}[1]{付録\ref{#1}}
+\fi
+
+
+\chapter{序論}\label{chap:intro}
+\minitoc
+
+\section{研究背景}\label{sec::intro::background}
+
+\section{従来研究}\label{sec::intro::relatedresearch}
+
+\section{研究目的}\label{sec::intro::objective}
+
+\section{本論文の構成}\label{sec::intro::configuration}
+
+
+
+% 白魔術
+\expandafter\ifx\csname ifdraft\endcsname\relax
+    \end{document}
+\fi

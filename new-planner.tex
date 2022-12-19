@@ -1,0 +1,49 @@
+% 黒魔術
+\expandafter\ifx\csname ifdraft\endcsname\relax
+    \documentclass[a4paper,twoside,12pt,papersize, dvipdfmx]{iirthesis}
+    \usepackage{amsmath,amssymb,amsthm}
+    \usepackage{graphicx}
+    \usepackage{subcaption}
+    \usepackage{url}
+    \usepackage{otf}
+    \usepackage{minitoc}
+    \usepackage{bm}
+    \usepackage{amsmath,amssymb}
+    \begin{document}
+
+    \newcommand{\figref}[1]{\figurename\ref{#1}}
+    \newcommand{\tabref}[1]{\tablename\ref{#1}}
+    \renewcommand{\eqref}[1]{式~(\ref{#1})}
+    \newcommand{\chapref}[1]{\ref{#1}章}
+    \newcommand{\secref}[1]{\ref{#1}節}
+    \newcommand{\ssecref}[1]{\ref{#1}項}
+    \newcommand{\appref}[1]{付録\ref{#1}}
+\fi
+
+
+\chapter{ハンド動作計画の性能向上と新アルゴリズム}\label{chap::planner}
+\minitoc
+
+\section{順探索アルゴリズム}
+\subsection{$C_{\mathrm{free\_obj}}$の効率的な探索}
+\subsection{ゴール条件の緩和}
+\subsection{簡易Form Closure生成アルゴリズム}
+
+
+\section{逆探索アルゴリズム}
+\subsection{RRTを用いた逆探索アルゴリズム}
+\subsection{最適位置決め姿勢生成アルゴリズム}
+\subsection{$C_{\mathrm{free\_obj}}$の効率的な探索}
+
+
+\section{両側探索アルゴリズム}
+
+
+\section{経路平滑化アルゴリズム}
+
+
+
+% 白魔術
+\expandafter\ifx\csname ifdraft\endcsname\relax
+    \end{document}
+\fi

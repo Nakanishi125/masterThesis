@@ -1,0 +1,43 @@
+% 黒魔術
+\expandafter\ifx\csname ifdraft\endcsname\relax
+    \documentclass[a4paper,twoside,12pt,papersize, dvipdfmx]{iirthesis}
+    \usepackage{amsmath,amssymb,amsthm}
+    \usepackage{graphicx}
+    \usepackage{subcaption}
+    \usepackage{url}
+    \usepackage{otf}
+    \usepackage{minitoc}
+    \usepackage{bm}
+    \usepackage{amsmath,amssymb}
+    \begin{document}
+
+    \newcommand{\figref}[1]{\figurename\ref{#1}}
+    \newcommand{\tabref}[1]{\tablename\ref{#1}}
+    \renewcommand{\eqref}[1]{式~(\ref{#1})}
+    \newcommand{\chapref}[1]{\ref{#1}章}
+    \newcommand{\secref}[1]{\ref{#1}節}
+    \newcommand{\ssecref}[1]{\ref{#1}項}
+    \newcommand{\appref}[1]{付録\ref{#1}}
+\fi
+
+
+\chapter{センサレスin-handケージングマニピュレーション}\label{chap::sicm}
+\minitoc
+
+\section{概要}
+
+\section{システムの全体像}\label{sec::sicm::overall}
+\subsection{装置の説明}\label{subsec::sicm::equipment}
+\subsection{対向型ハンド}\label{subsec::sicm::oppositehand}
+
+\section{ハンドの動作計画}\label{sec::scim::planning}
+\subsection{コンフィギュレーション空間}\label{subsec::sicm::cspace}
+\subsection{RRTによるハンド動作の探索}\label{subsec::sicm::rrt}
+\subsection{ケージング条件とケージングマニピュレーション可能条件}\label{subsec::sicm::caging}
+
+
+
+% 白魔術
+\expandafter\ifx\csname ifdraft\endcsname\relax
+    \end{document}
+\fi

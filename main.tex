@@ -1,0 +1,100 @@
+\documentclass[a4paper,twoside,12pt,papersize, dvipdfmx]{iirthesis}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{url}
+\usepackage{otf}
+\usepackage{minitoc}
+\usepackage{bm}
+\usepackage{amsmath,amssymb}
+\usepackage{multirow}
+\usepackage{times} % times new roman
+\usepackage{pdfpages}
+
+% 単体コンパイルを可能にするための仕込み
+\newcommand{\ifdraft}{false}
+
+\newcommand{\figref}[1]{\figurename\ref{#1}}
+\newcommand{\tabref}[1]{\tablename\ref{#1}}
+\renewcommand{\eqref}[1]{式~(\ref{#1})}
+\newcommand{\chapref}[1]{\ref{#1}章}
+\newcommand{\secref}[1]{\ref{#1}節}
+\newcommand{\ssecref}[1]{\ref{#1}項}
+\newcommand{\appref}[1]{付録\ref{#1}}
+
+\begin{document}
+%\includepdf[pages=-]{title.pdf}
+
+ \pagestyle{empty}		%ページ番号を消す
+ \thesistype{{令和4年度 修士論文}}
+ \title{\Huge{平面内センサレスin-handケージングマニピュレーションの計画}}
+ \etitle{}
+ \author{}
+ \eauthor{}
+ \miscinfo{
+ \begin{tabular}{c}
+ \\
+ \vspace{-3mm}
+ {\Large 2022年1月24日} \\[3em]
+ {\Large 指導教員 : 前田 雄介 教授} \\[2em]
+ {\Large 横浜国立大学 大学院 理工学府} \\
+ {\Large 機械・材料・海洋系工学専攻} \\
+ {\Large 機械工学教育分野} \\
+ {\Large 21NA140 中西 佑太} \\
+ \end{tabular}
+ }
+ \maketitle
+
+%\pagestyle{empty}
+%\cleardoublepage
+%\begin{center}
+%    \vspace{12em}
+%    \Large
+%{\sffamily \bfseries \huge{}}\\
+%    \vspace{2em}
+%    {\LARGE by}\\
+%    \vspace{2em}
+%    {\LARGE 21NA140 Yuta NAKANISHI}\\
+%    \vspace{9em}
+%    Supervisor: Professor Yusuke MAEDA\\
+%    \vspace{2em}
+%    A Master's Thesis\\
+%    Submitted to\\
+%    the Specialization of Mechanical Engineering\\
+%    in the Department of Mechanical Engineering, Materials Science, and Ocean Engineering\\
+%    the Graduate School of Engineering Science of\\
+%    Yokohama National University\\
+%    \vspace{3em}
+%    January 24, 2022
+%\end{center}
+
+\cleardoublepage	%奇数ページから始まるように改ページ
+
+\frontmatter
+\pagestyle{headings}	%ヘッダにページ番号，章・節番号，見出しを表示
+\setcounter{tocdepth}{2}
+\dominitoc
+\tableofcontents
+
+
+\mainmatter
+%語句の統一に関する注意書き
+%〇コンフィギュレーション空間　　　×コンフィグレーション空間
+%〇対象物　　　　　　　　　　　　　×物体
+
+
+\include{introduction}
+\include{sensorless-icm}
+\include{new-planner}
+\include{manipulation-result}
+\include{conclusion}
+
+\backmatter
+
+\include{acknowledgements}
+\include{bibliography}
+
+%\appendix
+%\include{appendix}
+
+\end{document}
