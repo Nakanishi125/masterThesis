@@ -48,7 +48,7 @@
 対向型ハンドの弱点としては，横方向に大きく運べないという点が挙げられる．しかし，横方向の移動はベルトコンベアで賄えるので，大きな問題ではない．
 
 
-\section{対象物のコンフィギュレーション空間}\label{sec::sicm::cspace}
+\section{対象物のコンフィギュレーション空間\cite{komiyama2021}}\label{sec::sicm::cspace}
 本節では，ハンド動作計画の際に使用する，対象物のコンフィギュレーション空間について説明する．我々は対象物の状態を，位置$(x, y)$と姿勢(傾き)$\phi$の3変数によって表している．この3変数で構成される3次元空間が対象物のコンフィギュレーション空間である．空間内の任意の座標は，対象物の任意の位置・姿勢を表しており，それぞれ1:1に対応している．\par
 
 このコンフィギュレーション空間の中から，対象物が存在できる領域を対象物のコンフィギュレーション自由空間と呼び，$C_{\mathrm{free}}$と表す．具体的な$C_{\mathrm{free}}$の導出は以下の通りである．まず，任意の座標$(x, y, \phi)$に対して，対象物の図心を$(x, y)$に合わせ，$\phi$だけ傾ける．このとき\figref{fig::sicm::cfree}(a)のようにハンドにも壁にも干渉しない場合，任意の座標$(x, y, \phi)$は$C_{\mathrm{free}}$を構成する点として認められ，\figref{fig::sicm::cfree}(b)のように干渉した場合は，$C_{\mathrm{free}}$を構成する点としては認めない．この判定を空間全体に対して行ったときの前者の集合が$C_{\mathrm{free}}$となる．\par
@@ -76,10 +76,9 @@
 %fig::sicm::cfreeexamは込山2020のFig.3.4
 
 
-\section{ケージング条件とケージングマニピュレーション可能条件}\label{sec::sicm::caging}
-\subsection*{ケージング条件}
-\cite{yokoi2010}よりケージング成立条件は以下のようになる．
-ここで，次のように記号を定義する．
+\section{ケージング成立条件とケージングマニピュレーション可能条件\cite{komiyama2021}}\label{sec::sicm::caging}
+\subsection*{ケージング成立条件}
+ケージング条件の説明にあたり，以下のように記号を定義する．
 \begin{itemize}
 \item $\mathcal{C}$: 物体のコンフィギュレーション空間
 \item $\mathcal{A}_{\mathrm{obj}}$: 実空間での物体の領域
@@ -90,104 +89,51 @@
 % \item $\bm{q}_{\mathrm{goal}}$: ハンドの指部分の目標コンフィギュレーション
 \end{itemize}
 
-まず，物体がハンドの指部分と接触するために進入することのできない領域，
-コンフィギュレーション障害物領域$\mathcal{C}_{\mathrm{cls}\_\mathrm{finger}}$を考えると，次のように表される．
-\begin{equation}
-\mathcal{C}_{\mathrm{cls\_finger}} =
+まず，\secref{sec::sicm::cspace}で述べた，対象物がハンドやロボットと干渉せず存在できる位置・姿勢群であるコンフィギュレーション自由空間$\mathcal{C}_{\mathrm{free}}$は，上記の記号を用いて次のように表される．
+\begin{gather}
+\mathcal{C}_{\mathrm{free}} :=
 \{\bm{q}_{\mathrm{obj}} \in \mathcal{C} | \mathcal{A}_{\mathrm{obj}}(\bm{q}_{\mathrm{obj}})
-\cap \mathcal{A}_{\mathrm{finger}}(\bm{q}_{\mathrm{finger}}) \not= \emptyset\}
-\label{eq:obj-conf}
-\end{equation}
+\cap \mathcal{A}_{\mathrm{finger}}(\bm{q}_{\mathrm{finger}}) \neq \varnothing\}
+\label{eq::cfree}
+\end{gather}
 
-同様に，物体とパームが干渉するために進入することのできない領域，
-コンフィギュレーション障害物領域$\mathcal{C}_{\mathrm{cls\_palm}}$は次のように表される．
-\begin{equation}
-\mathcal{C}_{\mathrm{cls\_palm}} = \{\bm{q}_{\mathrm{obj}} \in \mathcal{C} | \mathcal{A}_{\mathrm{obj}}(\bm{q}_{\mathrm{obj}}) \cap \mathcal{A}_{\mathrm{palm}} \neq \emptyset\}
-\label{eq:palm-conf}
-\end{equation}
+\figref{}のようなハンド姿勢における，長方形物体のコンフィギュレーション自由空間$\mathcal{C}_{\mathrm{free}}$は，\figref{}のようになる．対象物のケージングが成立している場合，$\mathcal{C}_{\mathrm{free}}$は少なくとも2つ以上の連結した領域に分割される．これらの領域は2つのグループに分けられる．1つは，ハンドによって囲われ，ハンド内部で独立している領域．もう1つは，ハンド外部と接続された領域である．前者は対象物がハンド内部から出ることができないことを意味するためICS (Inescapable Configuration Space)と，後者は対象物がハンド外部へ自由に逃げられることを意味するためECS (Escapable Configuration Space)と呼ぶ(\figref{})．これらに属するコンフィギュレーション自由空間をそれぞれ$\mathcal{C}_{\mathrm{free\_ICS}}$，$\mathcal{C}_{\mathrm{free\_ECS}}$と定義する．$\mathcal{C}_{\mathrm{free\_ICS}}$，$\mathcal{C}_{\mathrm{free\_ECS}}$は，以下のような式で表される．
 
-式(\ref{eq:obj-conf})，(\ref{eq:palm-conf})より，パームを考慮した場合でのコンフィギュレーション障害物領域は次のように表される．
-\begin{equation}
-\mathcal{C}_{\mathrm{cls}} = \mathcal{C}_{\mathrm{cls\_finger}} \cup  \mathcal{C}_{\mathrm{cls\_palm}}
-\end{equation}
+\begin{gather}
+\mathcal{C}_{\mathrm{free\_ECS}} := 
+\bigcup_{\bm{q}_{\mathrm{obj}}\in P_{\mathrm{far}}}
+\mathcal{C}_{\mathrm{free\_max}}(\bm{q}_{\mathrm{obj}}) \\
+\mathcal{C}_{\mathrm{free\_ICS}} := \mathcal{C}_{\mathrm{free}} 
+\setminus \mathcal{C}_{\mathrm{free\_ECS}}
+\end{gather}
 
-このとき，物体がハンドの指部分およびパームと干渉することなく取ることができるコンフィギュレーション領域を
-$\mathcal{C}_{\mathrm{free}}$と定義する．$\mathcal{C}_{\mathrm{free}}$は，次のように表される．
-\begin{equation}
-\mathcal{C}_{\mathrm{free}} = \mathcal{C} \setminus  \mathcal{C}_{\mathrm{cls}}
- = \left(\mathcal{C} \setminus  \mathcal{C}_{\mathrm{cls\_finger}}\right) \setminus \mathcal{C}_{\mathrm{cls\_palm}}
-\end{equation}
+ここで，$P_{\mathrm{far}}$は，ロボットハンドによって囲われる可能性のない無限遠点を指す．$\mathcal{C}_{\mathrm{free}}$の内，$P_{\mathrm{far}} (\subset \mathcal{C})$を含む領域を$\mathcal{C}_{\mathrm{free\_ECS}}$と，$P_{\mathrm{far}} (\subset \mathcal{C})$を含まない領域を$\mathcal{C}_{\mathrm{free\_ICS}}$と判定する．\par
 
-次に，$\bm{q}_{\mathrm{obj}}\not\in \mathcal{C}_{\mathrm{cls}}$を物体の初期コンフィギュレーションとしたとき，
-物体が取り得るコンフィギュレーション領域$\mathcal{C}_{\mathrm{free\_obj}}$は次のように表される．
-\begin{equation}
-\mathcal{C}_{\mathrm{free\_obj}} = \{ \bm{q} \in \mathcal{C}_{\mathrm{free}} | \mathrm{connected} (\bm{q},\bm{q}_{\mathrm{obj}}) \}
-\end{equation}
+$\mathcal{C}_{\mathrm{free\_ICS}}$は複数の領域から構成される場合がある．言い換えると，対象物がハンド内部で取りうる位置・姿勢群は数パターンある場合がある．この内，実際に対象物が存在している領域はいずれか一つであり，この領域を$\mathcal{C}_{\mathrm{free\_obj}}$と定義する．式では以下のようにあらわせる．
+\begin{gather}
+\mathcal{C}_{\mathrm{free\_obj}} \subseteq \mathcal{C}_{\mathrm{free\_ICS}}
+\end{gather}
 
-ここで，$\mathrm{connected} (\bm{q},\bm{q}_{\mathrm{obj}})$とは，
-物体がコンフィギュレーション$\bm{q}_{\mathrm{obj}}$から$\bm{q}$へ，
-障害物と干渉することなく移動可能であることを示す．
+ここで，センサレスに$\mathcal{C}_{\mathrm{free\_obj}}$領域を特定するため，$\mathcal{C}_{\mathrm{free\_obj}}$の連続性を考える．つまり，対象物が実際に取りうる位置・姿勢群$\mathcal{C}_{\mathrm{free\_obj}}$は，直前$(t-\Delta t)$のハンド姿勢のものと現在$(t)$のハンド姿勢のものでは連続性の観点からオーバーラップしていると考える(\eqref{eq::continuous})．
+\begin{gather}\label{eq::continuous}
+\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t) \cap 
+\mathcal{C}_{\mathrm{free\_obj}}(t) \neq \varnothing
+\end{gather}
+これを基に，$\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$とオーバーラップする$\mathcal{C}_{\mathrm{free\_ICS}}(t)$を取り出すことで，$\mathcal{C}_{\mathrm{free\_obj}}(t)$が抽出される．$\mathcal{C}_{\mathrm{free\_obj}}(t=0)$は既知であるため，全ての時刻$t$において帰納的に特定できる．
 
-同様に，$\bm{q}_{\mathrm{inf}}\in \mathcal{C}$を無限遠点とすると，
-無限点と繋がっているコンフィグレーション自由領域$\mathcal{C}_{\mathrm{free\_inf}}$は次のように表される．
-\begin{equation}
-\mathcal{C}_{\mathrm{free\_inf}} = \{ \bm{q} \in \mathcal{C}_{\mathrm{free}} | \mathrm{connected} (\bm{q},\bm{q}_{\mathrm{inf}}) \}
-\end{equation}
-
-ケージングが成立するための必要十分条件は，
-物体が存在し得る領域が存在し，
-かつ物体が無限遠へ移動不可能であることである(\figurename\ref{fig:c_free_obj_with_palm})．
-よって，ケージング成立条件として，次の条件を満たす必要がある．
-\begin{equation}
-\begin{cases}
-\mathcal{C}_{\mathrm{free\_obj}} \neq \emptyset \\
-\mathcal{C}_{\mathrm{free\_obj}} \cap \mathcal{C}_{\mathrm{free\_inf}} = \emptyset
-\end{cases}
-\label{eq:object_closure}
-\end{equation} 
-
-% \begin{figure}[b]
-% \centering
-% \includegraphics[width=0.5\linewidth,clip]{fig/c_free_obj_with_palm.eps}
-% \caption{Object Closure by Fingers and a Palm}
-% \label{fig:c_free_obj_with_palm}
-% \end{figure}
-
+ケージング成立条件は，対象物が実際に取りうる位置・姿勢群がハンドによって完全に囲われ，外部に逃げられないことを保証するもので，以下の式で表せる．
+\begin{gather}
+\mathcal{C}_{\mathrm{free\_obj}} \neq \varnothing
+\end{gather}
 
 \subsection*{ケージングマニピュレーション可能条件}
-\cite{yokoi2010}ではケージングマニピュレーションの可能条件として次の条件を挙げた．
+ケージングマニピュレーション可能条件とは，センサレスな本手法において対象物の状態を確実に追跡するための条件である．先述の方法で，$\mathcal{C}_{\mathrm{free\_obj}}$の抽出を行うと，複数の領域が得られる場合がある．この場合，対象物が実際にどの領域へ遷移したか特定できない．この状態が続くと，対象物を最終的な目標位置・姿勢へマニピュレーションできなくなる．このような事態を防ぐため，以下の条件をケージングマニピュレーション可能条件として定めている．
 \begin{itemize}
-\item $\mathcal{C}_{\mathrm{free\_obj}}$が不連続に減少しない
-% \item 環境のみによるObject Closure 状態ではない
+\item $\mathcal{C}_{\mathrm{free\_obj}}$が1つの領域のみにより構成される
 \end{itemize}
 
-ここで「不連続な減少」について説明する．
-時間間隔$\Delta t$で考えることとして，\figurename\ref{fig:discontinuous_shrinkage}のように
-時刻$t$から時刻$t+\Delta t$の間において，ロボットが連続的な移動をしていたとしても$\mathcal{C}_{\mathrm{free\_obj}}$が不連続な減少をする場合がある．
-ケージングにおいては物体の位置を特定することができないため，$\mathcal{C}_{\mathrm{free\_obj}}$の不連続な減少が生じてその減少した領域内に物体が存在していた場合，
-マニピュレーションを継続するには物体の不連続な移動が求められることになる．しかし，そのような移動は物理的に不可能である．
-つまり，$\mathcal{C}_{\mathrm{free\_obj}}$の不連続な減少が生じた場合，
-物体の位置によってはマニピュレーションが不可能となる．
-
-
-また\figurename\ref{fig:split}のように$\mathcal{C}_{\mathrm{free\_obj}}$が分断されてしまった場合，どちらの領域に対象物が存在するか判定することができないが，
-どちらに存在した場合でも分断された領域の片方が$\mathcal{C}_{\mathrm{free\_obj}}$でなくなるため$\mathcal{C}_{\mathrm{free\_obj}}$が不連続に減少したと見なせる．
-
-よって，$\mathcal{C}_{\mathrm{free\_obj}}$が不連続な減少を生じた場合，マニピュレーション不可能と判定する．
-なお，$\mathcal{C}_{\mathrm{free\_obj}}$の不連続な増加に関しては，
-物体が存在し得る領域が大きくなるだけであるので，マニピュレーション可能条件において問題とはならない．
-この条件は以下のように書くことができる．
-\begin{equation}
-\lim_{\Delta t \rightarrow +0} \bigl( \mathcal{C}_{\mathrm{free\_obj}}(t) \cap \mathcal{C}_{\mathrm{free\_obj}}(t+\Delta t) \bigr)
-= \mathcal{C}_{\mathrm{free\_obj}}(t)
-\label{eq:manipulability}
-\end{equation}
-式(\ref{eq:manipulability})は，左辺の極限が存在し，
-なおかつ右辺と等しい場合，
-時刻$t$から時刻$t + \Delta t$の間での$\mathcal{C}_{\mathrm{free\_obj}}$の減少が不連続でないことを意味する．
-
-以上より摩擦のない理想的な状態では，式\eqref{eq:object_closure}，\eqref{eq:manipulability}を満たす
-ロボットハンドの経路を生成することができれば，対象物のセンシングをせずに，位置制御だけでこのIn-hand ケージングマニピュレーションが行うことができる．
+\figref{}，\figref{}は，ハンド姿勢のわずかな変化で$\mathcal{C}_{\mathrm{free\_obj}}$が二つの領域に分裂する場合の例を示している．\par
+$\mathcal{C}_{\mathrm{free\_obj}}$が一度分裂しても，後のハンド姿勢の変化によって，分裂した領域が再び一つになる場合がある．このような場合，それ以後のマニピュレーションは問題なく進むものと考えられるが，動作計画の際に，分裂した$\mathcal{C}_{\mathrm{free\_obj}}$の領域全てを追跡することは，非常に多くの計算量を要する作業である．そのため，一度$\mathcal{C}_{\mathrm{free\_obj}}$が分裂した時点で，当該ハンド姿勢は妥当ではないとしてハンドの動作を計画した．
 
 
 \section{ハンドの動作計画}\label{sec::scim::planning}
