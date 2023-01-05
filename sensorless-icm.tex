@@ -136,7 +136,7 @@ $\mathcal{C}_{\mathrm{free\_ICS}}$は複数の領域から構成される場合�
 $\mathcal{C}_{\mathrm{free\_obj}}$が一度分裂しても，後のハンド姿勢の変化によって，分裂した領域が再び一つになる場合がある．このような場合，それ以後のマニピュレーションは問題なく進むものと考えられるが，動作計画の際に，分裂した$\mathcal{C}_{\mathrm{free\_obj}}$の領域全てを追跡することは，非常に多くの計算量を要する作業である．そのため，一度$\mathcal{C}_{\mathrm{free\_obj}}$が分裂した時点で，当該ハンド姿勢は妥当ではないとしてハンドの動作を計画した．
 
 
-\section{ハンドの動作計画}\label{sec::scim::planning}
+\section{ハンドの動作計画\cite{komiyama2021}}\label{sec::sicm::planning}
 先述の通り，本手法ではケージング成立条件とケージングマニピュレーション可能条件を満たした状態を維持しつつハンドを動かすことで，センサレスに対象物を目標位置・姿勢へとマニピュレーションできる．本節では，このハンドの動作生成について説明する．\cite{komiyama2021}では，経路計画手法の一つであるRRT (Rapidly-exploring Random Trees)\cite{lavalle2001}を用いた．ここで，ハンド動作はあらかじめオフラインで生成している．具体的なアルゴリズムは以下の通りである．
 \begin{enumerate}
 \item ハンドの初期コンフィギュレーション(姿勢)$\bm{q}_{\mathrm{initial}}$を設定する
@@ -156,6 +156,7 @@ $\mathcal{C}_{\mathrm{free\_obj}}$が一度分裂しても，後のハンド姿�
 \label{fig::sicm::rrt}
 \end{figure}
 
+ゴール条件の話も書く
 %デメリット等も書いた方がいいか？
 
 % 白魔術
