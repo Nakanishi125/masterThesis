@@ -146,18 +146,28 @@ $\mathcal{C}_{\mathrm{free\_obj}}$が一度分裂しても，後のハンド姿�
 \item $\bm{q}_{\mathrm{new}}$においてケージング成立条件を満たさなければ手順\ref{algo::sampling}に戻る
 \item $\bm{q}_{\mathrm{new}}$においてケージングマニピュレーション可能条件を満たさなければ手順\ref{algo::sampling}に戻る
 \item $\bm{q}_{\mathrm{nearest}}$から$\bm{q}_{\mathrm{new}}$へ枝を伸ばす\label{algo::fin}
-\item 手順\ref{algo::sampling}から手順\ref{algo::fin}を繰り返し，$\bm{q}_{\mathrm{new}}$が終了条件を満たせば探索終了とする
+\item 手順\ref{algo::sampling}から手順\ref{algo::fin}を繰り返し，$\bm{q}_{\mathrm{new}}$が終了条件を満たせば探索終了とする \label{algo::goal}
 \end{enumerate}
 これにより，ハンドの初期姿勢から終了姿勢までの一連の時系列データが得られる．
 \begin{figure}[b]
 \centering
 \includegraphics[width=0.5\hsize]{fig/Sensorless_ICM/rrtdiagram.pdf}
-\caption{Procedure of RRT\cite{komiyama2021}}
+\caption{Procedure of RRT \cite{komiyama2021}}
 \label{fig::sicm::rrt}
 \end{figure}
 
-ゴール条件の話も書く
-%デメリット等も書いた方がいいか？
+手順\ref{algo::goal}の探索終了条件の説明にあたり，収束度$e$を定義する．収束度$e$は，その時のハンド姿勢によって対象物が目標位置・姿勢へどの程度，位置決めされているかを示すもので以下の\eqref{eq::sicm::converge}で表される．
+\begin{gather}
+\label{eq::sicm::converge}
+e = \max \sqrt{(w_1(x-x_{\mathrm{goal}}))^2+(w_2(y-y_{\mathrm{goal}}))^2 + (w_3(\phi-\phi_{\mathrm{goal}}))^2} \\
+(x, y, \phi) \in \mathcal{C}_{\mathrm{free\_obj}} \notag
+\end{gather}
+ここで，$w_1$，$w_2$，$w_3$は定数であり，これらによって\eqref{eq::sicm::converge}の各項を無次元化し，位置$(x, y)$と姿勢$\phi$という異なる単位同士を一つの式で取り扱えるようにしている．\par
+そして，収束度$e$と閾値$\varepsilon$を用いて探索終了条件は以下の\eqref{equ::sicm::goalcondition}となっている．
+\begin{gather}
+e \leq \varepsilon
+\end{gather}
+閾値$\varepsilon$を小さくする，つまり位置決め精度を高めようとすると計算時間が長くなり，閾値$\varepsilon$を大きくすると計算時間が短くなる．すなわち，位置決め精度と計算時間の間にはトレードオフの関係があり，両者のバランスを取ったパラメータ設定が重要となる．
 
 % 白魔術
 \expandafter\ifx\csname ifdraft\endcsname\relax

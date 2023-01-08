@@ -25,24 +25,27 @@
 \minitoc
 
 \section{はじめに}\label{sec::planner::intro}
-%ハンドの寸法とかPCの性能の話，動作計画で使ってる情報の説明
+%ハンドの寸法とかPCの性能の話，閾値，コンフィギュレーションの離散粗さ，動作計画で使ってる情報の説明
 
 \section{順探索アルゴリズム}\label{sec::planner::straight}
 改めて\chapref{chap::sicm}のハンド動作計画の流れを振り返る．まず，入力はハンドの初期姿勢と対象物の形状情報，そして対象物の目標位置・姿勢である．これらを基に，ハンド初期姿勢からRRTによりランダムにサンプリングし，その都度対象物の形状情報から$\mathcal{C}_{\mathrm{free\_obj}}$を計算する．ケージング成立条件，ケージングマニピュレーション可能条件の満足を確認しつつ探索を進め，対象物の目標位置・姿勢から決まる探索終了条件を満たせば動作計画が完了する．出力としては，ハンドの関節角度の時系列データが得られる．\par
 この動作計画アルゴリズムを順探索アルゴリズムと呼ぶこととする．この順探索アルゴリズムには，計算時間が遅い，位置決め精度が悪いという2つの課題がある．以下の項は，これらの解決方法についてであり，前者の課題に対しては，\ssecref{subsec::planner::goalcond}，\ssecref{subsec::planner::dfs}で，後者の課題に対しては，\ssecref{subsec::planner::formclosure}で説明する．
 
 \subsection{探索終了条件の緩和}\label{subsec::planner::goalcond}
-\secref{sec::sicm::planning}の通り，先行研究では対象物の目標位置・姿勢として$P_G (x_{\mathrm {goal}}, y_{\mathrm {goal}}, \phi_{\mathrm {goal}})$のコンフィギュレーション空間の1座標を指定していた．しかし，本手法はパーツフィーダへの応用を想定しており，この際対象物を整列後，ベルトコンベアに乗せて生産ライン方向である$x$方向へ流す．そのため，$x$方向への目標設定は必須ではない．そこで，対象物の目標位置・姿勢を$P_G (x_{\mathrm {any}}, y_{\mathrm {goal}}, \phi_{\mathrm {goal}})$と$y$，$\phi$のみを指定するようにした．\par
-これに従って，探索終了条件も以下のように変更した．
+\secref{sec::sicm::planning}の通り，先行研究では対象物の目標位置・姿勢として$P_G (x_{\mathrm {goal}}, y_{\mathrm {goal}}, \phi_{\mathrm {goal}})$のコンフィギュレーション空間の1点を指定していた．しかし，本手法はパーツフィーダへの応用を想定しており，この際対象物を整列後，ベルトコンベアに乗せて生産ライン方向である$x$方向へ流す．そのため，$x$方向への目標設定は必須ではない．そこで，対象物の目標位置・姿勢を$P_G (x_{\mathrm {any}}, y_{\mathrm {goal}}, \phi_{\mathrm {goal}})$と$y$，$\phi$のみを指定するようにした．\par
+これに従って，収束度$e$の定義を\eqref{eq::planner::e}，探索終了条件を\eqref{eq::planner::goalcondition}のように変更した．
 \begin{gather}
-\max \sqrt{(w_1\Delta x)^2 + (w_2(y-y_{\mathrm{goal}}))^2 + (w_3(\phi-\phi_{\mathrm{goal}}))^2} \leq \varepsilon \\
-(x, y, \phi) \in \mathcal{C}_{\mathrm{free\_obj}} , \Delta x = x_{\mathrm {max}} - x_{\mathrm {min}}
+e = \max \sqrt{(w_1\Delta x)^2 + (w_2(y-y_{\mathrm{goal}}))^2 + (w_3(\phi-\phi_{\mathrm{goal}}))^2} \label{eq::planner::e} \\
+e \leq \varepsilon \label{eq::planner::goalcondition} \\
+\because  \Delta x = \dfrac{\max x  - \min x}{2} ,\;\; (x, y, \phi) \in \mathcal{C}_{\mathrm{free\_obj}} \notag
 \end{gather}
 これにより，$x$方向に関しては座標の調整が必要なくなったため，先行研究より早い探索終了が見込める．
 
 \subsubsection{計算時間の比較}
 
+
 \subsection{$\mathcal{C}_{\mathrm{free\_obj}}$の効率的な探索}\label{subsec::planner::dfs}
+
 
 \subsubsection{計算時間の比較}
 
@@ -55,7 +58,7 @@
 上記の片ハンドずつ対象物への距離を詰めていくという部分に関して，本アルゴリズムでは，左ハンド，右ハンドの順で狭めるパターンと右ハンド，左ハンドの順で狭めるパターンの2パターンを試みる．そして，より位置・姿勢決め精度が向上した方を最終的なハンド姿勢として採用する．
 
 \subsubsection{結果}
-本アルゴリズムを用いて，どの程度位置決め精度が向上するかを評価する．評価には3.3節で定義した収束度$\varepsilon$を用い，小さいほどゴールへの収束度が高く，位置・姿勢決め精度が向上したと判断する．
+本アルゴリズムを用いて，どの程度位置決め精度が向上するかを評価する．評価には\secref{sec::sicm::planner}で定義した収束度$e$を用い，小さいほどゴールへの収束度が高く，位置・姿勢決め精度が向上したと判断する．
 
 \section{逆探索アルゴリズム}\label{sec::planner::reverse}
 \subsection{RRTを用いた逆探索アルゴリズム}
@@ -75,10 +78,6 @@
 \section{両側探索アルゴリズム}
 \subsection{RRT-Connectを用いた両側探索アルゴリズム}
 \subsection{計算時間の比較}
-
-\section{経路平滑化アルゴリズム}
-
-
 
 % 白魔術
 \expandafter\ifx\csname ifdraft\endcsname\relax
