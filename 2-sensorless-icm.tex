@@ -62,11 +62,11 @@
 \begin{figure}[b]
 \begin{minipage}{0.5\hsize}
 \centering
-\includegraphics[width=0.9\hsize]{fig/Sensorless_ICM/define_cfree.jpg}
+\includegraphics[width=0.9\hsize]{fig/2-sensorless-icm/define_cfree.jpg}
 \end{minipage}
 \begin{minipage}{0.5\hsize}
 \centering
-\includegraphics[width=0.9\hsize]{fig/Sensorless_ICM/define_notcfree.jpg}
+\includegraphics[width=0.9\hsize]{fig/2-sensorless-icm/define_notcfree.jpg}
 \end{minipage}
 \caption{Definition of $C_{\mathrm{free}}$}
 \label{fig::sicm::cfree}
@@ -151,15 +151,15 @@ $\mathcal{C}_{\mathrm{free\_obj}}$が一度分裂しても，後のハンド姿�
 これにより，ハンドの初期姿勢から終了姿勢までの一連の時系列データが得られる．
 \begin{figure}[b]
 \centering
-\includegraphics[width=0.5\hsize]{fig/Sensorless_ICM/rrtdiagram.pdf}
+\includegraphics[width=0.5\hsize]{fig/2-sensorless-icm/rrtdiagram.pdf}
 \caption{Procedure of RRT \cite{komiyama2021}}
 \label{fig::sicm::rrt}
 \end{figure}
 
-手順\ref{algo::goal}の探索終了条件の説明にあたり，収束度$e$を定義する．収束度$e$は，その時のハンド姿勢によって対象物が目標位置・姿勢へどの程度，位置決めされているかを示すもので以下の\eqref{eq::sicm::converge}で表される．
+手順\ref{algo::goal}の探索終了条件の説明にあたり，収束度$e$を定義する．収束度$e$は，その時のハンド姿勢によって対象物が目標位置・姿勢へどの程度，位置決めされているかを示すもので以下の\eqref{eq::sicm::converge}で表される．$e$の値が小さければ小さいほど，位置決め精度が高いことを意味する．
 \begin{gather}
 \label{eq::sicm::converge}
-e = \max \sqrt{(w_1(x-x_{\mathrm{goal}}))^2+(w_2(y-y_{\mathrm{goal}}))^2 + (w_3(\phi-\phi_{\mathrm{goal}}))^2} \\
+e = \max \sqrt{(w_1(x-x_{\mathrm{goal}}))^2+(w_2(y-y_{\mathrm{goal}}))^2 + (w_3(\phi-\phi_{\mathrm{goal}}))^2}\label{eq::sicm::e} \\
 (x, y, \phi) \in \mathcal{C}_{\mathrm{free\_obj}} \notag
 \end{gather}
 ここで，$w_1$，$w_2$，$w_3$は定数であり，これらによって\eqref{eq::sicm::converge}の各項を無次元化し，位置$(x, y)$と姿勢$\phi$という異なる単位同士を一つの式で取り扱えるようにしている．\par

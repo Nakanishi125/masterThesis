@@ -23,12 +23,47 @@
     \newcommand{\algoref}[1]{Algorithm.\ref{#1}}
 \fi
 
+\newcommand{\tab}[0]{\;\;\;\;}
 
 \chapter{ハンド動作計画の性能向上と新アルゴリズム}\label{chap::planner}
 \minitoc
 
 \section{はじめに}\label{sec::planner::intro}
 %ハンドの寸法とかPCの性能の話，閾値，コンフィギュレーションの離散粗さ，動作計画で使ってる情報の説明
+本章ではハンドの動作計画における先行研究からの改善点や新たな手法の提案を説明する．本節では，実際の動作計画に使用する設定情報についてまとめる．\par
+
+\paragraph{ハンドの設定}
+まずは，ハンドの設定についてである．ハンドは\ssecref{subsec::sicm::oppositehand}の対向型ハンドを以降の全ての動作計画に対して使用している．ハンドの寸法は以下のように設定した(\figref{fig::planner::handsystem})．
+\begin{gather}
+\notag
+\left\{
+\begin{aligned}
+L &= 60 \mathrm{[mm]} & w& = 35 \mathrm{[mm]} & h &= 415 \mathrm{[mm]}\\
+d_0 &= 38 \mathrm{[mm]} & d_1 &= 130 \mathrm{[mm]} & d_2 &= 130 \mathrm{[mm]} & d_3 = 90 \mathrm{[mm]}
+\end{aligned}
+\right .
+\end{gather}
+
+
+\paragraph{対象物のコンフィギュレーション空間の設定}
+対象物コンフィギュレーション空間は$-400 \mathrm{[mm]} \leq x \leq 400 \mathrm{[mm]}$，$-50 \mathrm{[mm]} \leq y \leq 550 \mathrm{[mm]}$，$0 \mathrm{[deg]} \leq \phi \leq 360 \mathrm{[deg]}$の直方体空間と設定した．$(x,y)$の原点は\figref{fig::planner::handsystem}の原点$O$に相当し，$\phi$の原点は以下に記す対象物の姿勢$0^\circ$に相当する．前述の通り，コンフィギュレーション空間は格子状に分割し，離散的に取り扱っている．この格子点幅は$(\Delta x, \Delta y, \Delta \phi) = (10 \mathrm{[mm]}, 10 \mathrm{[mm]}, 5 \mathrm{[deg]})$と設定した．$P_{\mathrm {far}}$は，$\mathcal{C}_{\mathrm{free\_ICS}}$の導出で用いる，ハンドから十分に離れた点群であり，以下の式で表される点群と設定した．なお，$C_{\mathrm {space}}$はコンフィギュレーション空間の全離散点群を表す．
+\begin{gather}
+\notag
+P_{\mathrm {far}} = \{ (x, y, \phi) \in C_{\mathrm {space}} \,|\, x = -400 \mathrm{[mm]} \lor x = 400 \mathrm{[mm]} \lor y = 550\mathrm{[mm]} \}
+\end{gather}
+
+\paragraph{対象物の形状情報}
+本論文では，長方形物体，三角形物体，L字型物体，T字型物体を対象に動作計画を行った．これらの対象物の寸法情報や姿勢の定義について述べる．長方形物体は\figref{}のように設定した．図心は対角線の交点であり，姿勢は短辺が水平方向となるように置いた状態を$0^\circ$とした傾き角度となる．三角形物体は\figref{}のように設定した．図心は外接円の中心であり，姿勢は$e_1$が水平方向となるように置いた状態を$0^\circ$とした傾き角度である．そのため，ユーザは三角形物体の形状情報を設定するとき，どの辺が$e_1$かを把握し，そのうえで目標姿勢を与える必要がある．L字型物体は\figref{}のように設定した．図心は\figref{}のように補助線を引いて得られる長方形の対角線交点である．姿勢は文字「L」を$0^\circ$とした傾き角度である．T字型物体は\figref{}のように設定した．図心，姿勢ともにL字型と同様である．なお，傾きは$0 \mathrm{[deg]} \leq \phi \leq 360 \mathrm{[deg]}$で表し，時計回りに測る．
+
+\paragraph{PCのスペック}
+OS：Ubuntu 22.04.1 LTS，CPU：AMD Ryzen 7 3700X 8-Core Processor，クロック周波数：4.43[GHz]，RAM：32.0[GB]のPCで計算する．
+
+%\begin{figure}[b]
+%\centering
+%\includegraphics
+%\caption{ハンドの図，写真じゃなくてパワポとかで}
+%\label{fig::planner::handsystem}
+%\end{figure}
 
 \section{順探索アルゴリズム}\label{sec::planner::straight}
 改めて\chapref{chap::sicm}のハンド動作計画の流れを振り返る．まず，入力はハンドの初期姿勢と対象物の形状情報，そして対象物の目標位置・姿勢である．これらを基に，ハンド初期姿勢からRRTによりランダムにサンプリングし，その都度対象物の形状情報から$\mathcal{C}_{\mathrm{free\_obj}}$を計算する．ケージング成立条件，ケージングマニピュレーション可能条件の満足を確認しつつ探索を進め，対象物の目標位置・姿勢から決まる探索終了条件を満たせば動作計画が完了する．出力としては，ハンドの関節角度の時系列データが得られる．\par
@@ -45,6 +80,12 @@ e \leq \varepsilon \label{eq::planner::goalcondition} \\
 これにより，$x$方向に関しては座標の調整が必要なくなったため，先行研究より早い探索終了が見込める．
 
 \subsubsection{計算時間の比較}
+\eqref{eq::planner::e}の収束度$e$の定数$w_1$，$w_2$，$w_3$を次のように設定した．
+\begin{gather}
+\notag
+w_1=1 \mathrm{[mm^{-1}]} \tab w_2=1 \mathrm{[mm^{-1}]} \tab w_3=1 \mathrm{[deg^{-1}]}
+\end{gather}
+以降の収束度$e$の計算にもこれらの値を用いる．
 
 
 \subsection{$\mathcal{C}_{\mathrm{free\_obj}}$の効率的な抽出}\label{subsec::planner::dfs}
@@ -78,8 +119,25 @@ $\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$の内，探索されていない�
 上記の片ハンドずつ対象物への距離を詰めていくという部分に関して，本アルゴリズムでは，左ハンド，右ハンドの順で狭めるパターンと右ハンド，左ハンドの順で狭めるパターンの2パターンを試みる．そして，より位置・姿勢決め精度が向上した方を最終的なハンド姿勢として採用する．
 
 \subsubsection{結果}
-本アルゴリズムを用いて，どの程度位置決め精度が向上するかを評価する．評価には\secref{sec::sicm::planner}で定義した収束度$e$を用い，小さいほどゴールへの収束度が高く，位置・姿勢決め精度が向上したと判断する．
-
+本アルゴリズムを用いて，どの程度位置決め精度が向上するかを評価する．評価には\eqref{eq::planner::e}の収束度$e$を用い，小さいほどゴールへの収束度が高く，位置・姿勢決め精度が向上したと判断する．
+figref{fig::afterfc}のように，$\varepsilon$の値はアルゴリズム適用前が48.8だったのに対し，右ハンド，左ハンドの順の場合は25.5で，左ハンド，右ハンドの順で狭める場合は19.6となった．これらより，位置・姿勢決め精度の向上を確認できた．
+また，上記の2パターンの狭め方を試したことに関して，多くは同じ結果が得られるが，今回の場合のように精度に差が出る場合があることがあり，複数パターンを試すことの有効性が確認できた．今後，他の狭め方もパターンに含めることで更なる精度向上が望める可能性がある．　\par
+課題点としては，今回用いたハンドの関節角上限が$90^{\circ}$であるため，\figref{fig::afterfc}の左ハンドの手先リンクのように，対象物まで狭めきれない場合がある．実機を改良して$90^{\circ}$以上回転を可能にすることで，更なる精度向上が望める．
+\begin{figure}[b]
+\centering
+\begin{minipage}{0.33\hsize}
+\includegraphics[width=0.9\hsize]{fig/3-new-planner/rec_before_FC.png}
+\subcaption{Before applying}\label{fig::planner::beforefc}
+\end{minipage}\hfill
+\begin{minipage}{0.33\hsize}
+\includegraphics[width=0.9\hsize]{fig/3-new-planner/rec_FC_left_right.png}
+\subcaption{left$\rightarrow$right}\label{fig::planner::afterfclr}
+\end{minipage}\hfill
+\begin{minipage}{0.33\hsize}
+\includegraphics[width=0.9\hsize]{fig/3-new-planner/rec_FC_right_left.png}
+\subcaption{right$\rightarrow$left}\label{fig::planner::afterfcrl}
+\end{minipage}
+\end{figure}
 
 \section{逆探索アルゴリズム}\label{sec::planner::reverse}
 \subsection{RRTを用いた逆探索アルゴリズム}
@@ -121,19 +179,21 @@ $\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$の内，探索されていない�
 \section{両側探索アルゴリズム}\label{sec::planner::connect}
 \secref{sec::planner::reverse}の逆探索アルゴリズムでは，期待したほどの計算時間の向上は得られなかった．そこで，順探索アルゴリズムと逆探索アルゴリズムを組み合わせた両探索アルゴリズムを提案する．
 \subsection{RRT-Connectを用いた両側探索アルゴリズム}
-RRT-Connect\cite{kuffner2000}を用いて両側探索アルゴリズムを構築する．これは，順探索アルゴリズムにおける探索初期状態$\bm {\theta}_S$と逆探索アルゴリズムにおける探索初期状態$\bm {\theta}_G$から交互に枝を伸ばしていき，これらの枝が連結した時，その連結経路を解として探索を終了するアルゴリズムである．なお，本アルゴリズムでは順探索アルゴリズム，逆探索アルゴリズムの探索終了条件も残しており，合計3つの探索終了条件の内，いずれかを満たせば終了するようになっている．具体的なアルゴリズムは以下のようになっている．
+RRT-Connect\cite{kuffner2000}を用いて両側探索アルゴリズムを構築する．これは，順探索アルゴリズムにおける探索初期状態$\bm {\theta}_S$と逆探索アルゴリズムにおける探索初期状態$\bm {\theta}_G$から交互に枝を伸ばしていき，これらの枝が連結した時，その連結経路を解として探索を終了するアルゴリズムである．なお，本アルゴリズムでは順探索アルゴリズム，逆探索アルゴリズムの探索終了条件も残しており，合計3つの探索終了条件の内，いずれかを満たせば終了するようになっている．具体的なアルゴリズムは以下のようになっている(\figref{})．
 \begin{enumerate}
 \item 順探索におけるハンドの初期ノード(姿勢)$\bm{q}_{\mathrm init}$と逆探索におけるハンドの初期ノード$\bm{q}_{\mathrm goal}$を設定する．以降，$\bm{q}_{\mathrm init}$を起点としたグラフを$T_{\mathrm forward}$，$\bm{q}_{\mathrm goal}$を起点としたグラフを$T_{\mathrm reverse}$とする
 \item ハンドの任意のノード$\bm{q}_{\mathrm sample}$をサンプリングし，$T_{\mathrm forward}$の内，$\bm{q}_{\mathrm{sample}}$から最も近いノード$\bm{q}_{\mathrm{nearest}}$を見つける\label{algo::planner::sampling}
 \item $\bm{q}_{\mathrm{nearest}}$から$\bm{q}_{\mathrm{sample}}$の方向へ長さ$\Delta l$の枝を伸ばし，そのノードを$\bm{q}_{\mathrm{new}}$とする
 \item $\bm{q}_{\mathrm{new}}$において環境とハンドまたはハンド同士の干渉，ケージングに関する2条件を判定し，妥当でなければ手順\ref{algo::planner::sampling}に戻る
-\item $\bm{q}_{\mathrm{new}}$と一番近いノード$\bm{q}_{\mathrm{opposite\_near}}$を$T_{\mathrm reverse}$から探索する
+\item $\bm{q}_{\mathrm{new}}$と一番近いノード$\bm{q}_{\mathrm{opposite\_near}}$を$T_{\mathrm reverse}$から探索する\label{algo::planner::biasbegin}
 \item $\bm{q}_{\mathrm{opposite\_near}}$から$\bm{q}_{\mathrm{new}}$に向けて長さ$\Delta l$の枝を伸ばし，$\bm{q}_{\mathrm{opposite\_new}}$とする\label{algo::planner::proceed}
 \item $\bm{q}_{\mathrm{opposite\_new}}$において環境とハンドまたはハンド同士の干渉，ケージングに関する2条件を判定する
-\item $\bm{q}_{\mathrm{opposite\_new}}$が妥当かつ探索終了条件を満たさない場合，$\bm{q}_{\mathrm{opposite\_new}}$を$\bm{q}_{\mathrm{opposite\_near}}$とし，手順\ref{algo::planner::proceed}に戻る
+\item $\bm{q}_{\mathrm{opposite\_new}}$が妥当かつ探索終了条件を満たさない場合，$\bm{q}_{\mathrm{opposite\_new}}$を$\bm{q}_{\mathrm{opposite\_near}}$とし，手順\ref{algo::planner::proceed}に戻る\label{algo::planner::biasend}
 \item $\bm{q}_{\mathrm{opposite\_new}}$が妥当でない場合，役割を入れ替えて(kwsk)手順\ref{algo::planner::sampling}に戻る
-\item $\bm{q}_{\mathrm{opposite\_new}}$が探索終了条件を満たせば終了
+\item $\bm{q}_{\mathrm{opposite\_new}}$が探索終了条件を満たせば終了\label{algo::planner::goalcond}
 \end{enumerate}
+
+本アルゴリズムの特徴は二つある．一つ目は，探索終了条件を3つ設定していることである．それぞれ，$T_{\mathrm forward}$が順探索アルゴリズムの探索終了条件を満たす，$T_{\mathrm reverse}$が逆探索アルゴリズムの探索終了条件を満たす，$T_{\mathrm forward}$と$T_{\mathrm reverse}$が繋がり，結合点間のケージング2条件も満たす，の3つとなっている．いずれかを満たせばよいため，順探索アルゴリズム，逆探索アルゴリズムと比べて条件は緩くなっていると言える．二つ目は，手順\ref{algo::planner::biasbegin}から\ref{algo::planner::biasend}にかけて非常に強いバイアスがかかるという点である．スタートからゴール方向へ，ゴールからスタート方向へ進めるだけ進めるというバイアスがかかっているため，順探索アルゴリズムや逆探索アルゴリズムのようなランダムサンプリングに比べて効率的な探索になっている．これら二つの特徴から計算時間の短縮が見込める．
 
 \subsection{計算時間の比較}
 
