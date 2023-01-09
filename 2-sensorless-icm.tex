@@ -33,32 +33,45 @@
 %オフラインで事前生成要素も書ければ書きたい
 
 \section{汎用パーツフィーダ}\label{sec::sicm::partsfeeder}
-センサレスin-handケージングマニピュレーションの位置・姿勢にばらつきのある対象物を特定の位置・姿勢に整列できるという機能を活かして，本手法はパーツフィーダへ応用することを見込んでいる．本研究では，ベルトコンベアと1対のロボットハンドを用いて\figref{}のように構成している．ロボットハンドは，3つのリンク，3つの関節からなる3自由度ハンドとなっている．ここで，\figref{}のように1対のロボットハンドを並列に並べたハンド構成を並列型ハンドと呼ぶこととする．
+センサレスin-handケージングマニピュレーションの位置・姿勢にばらつきのある対象物を特定の位置・姿勢に整列できるという機能を活かして，本手法はパーツフィーダへ応用することを見込んでいる．本研究では，ベルトコンベアと1対のロボットハンドを用いて\figref{fig::sicm::overview}のように構成している．ロボットハンドは，3つのリンク，3つの関節からなる3自由度ハンドとなっている．ここで，\figref{fig::sicm::overview}のように1対のロボットハンドを並列に並べたハンド構成を並列型ハンドと呼ぶこととする．
 \subsection{一連の動作の流れ\cite{kamikukita2022}}\label{subsec::sicm::flow}
-パーツフィーダの動作の流れについて説明する(\figref{})．まず，ハンドを開いた状態で，ベルトコンベアにより対象物を一定時間移動させ，停止する．その後，ハンドを閉じて物体を囲み，対象物のケージング状態を作った後にマニピュレーションを行う．整列が終了すると，ハンドを開いて物体を開放し，ベルトコンベアを一定時間動かして，対象物を流出させる．\par
+パーツフィーダの動作の流れについて説明する(\figref{fig::sicm::overview})．まず，ハンドを開いた状態で，ベルトコンベアにより対象物を一定時間移動させ，停止する．その後，ハンドを閉じて物体を囲み，対象物のケージング状態を作った後にマニピュレーションを行う．整列が終了すると，ハンドを開いて物体を開放し，ベルトコンベアを一定時間動かして，対象物を流出させる．\par
 本来のパーツフィーダでは，物体の分離と整列が必要となるが，本研究で扱うパーツフィーダは，物体の分離は行わず，ベルトコンベア上に十分な間隔で物体があることを前提として物体の整列動作を行う．
-%上の\figref{}は全部同じ参照で，パーツフィーダの流れの説明した画像．上久木田卒論のFig3.2
 
+\begin{figure}[b]
+\centering
+\includegraphics[width=0.9\hsize]{fig/2-sensorless-icm/systemoverview.pdf}
+\caption{System overview} \label{fig::sicm::overview}
+\end{figure}
 
 \subsection{対向型ハンド}\label{subsec::sicm::oppositehand}
-\ref{sec::intro::objective}で述べた通り，並列型ハンドでは対象物がハンド根元付近に詰まり，ハンドが正常に動けなくなるジャミング(\figref{})が発生していた．また，並列型ハンドの構造上，ハンド根元関節付近に対象物が存在する場合，マニピュレーションできないといった問題点も存在した．\par
+\ref{sec::intro::objective}で述べた通り，並列型ハンドでは対象物がハンド根元付近に詰まり，ハンドが正常に動けなくなるジャミング(\figref{fig::sicm::jam})が発生していた．また，並列型ハンドの構造上，ハンド根元関節付近に対象物が存在する場合，マニピュレーションできないといった問題点も存在した．\par
 そこで，\figref{}のようなハンド構成，対向型ハンドを提案する．
 前者の問題に関して考える．%理論を考察する
 後者の問題に関しては，一方のハンドの根元側に物体があったとしても，他方のハンドで掬い取るような動作でマニピュレーションできるため，解決が見込める．\par
 対向型ハンドの弱点としては，横方向に大きく運べないという点が挙げられる．しかし，横方向の移動はベルトコンベアで賄えるので，大きな問題ではない．
-
+\begin{figure}[t]
+	\centering
+	\begin{minipage}{0.33\hsize}
+	\includegraphics[width=0.9\hsize]{fig/2-sensorless-icm/jam1.jpg}
+	\subcaption{Before jam}\label{fig::sicm::beforejam}
+	\end{minipage}\hfill
+	\begin{minipage}{0.33\hsize}
+	\includegraphics[width=0.9\hsize]{fig/2-sensorless-icm/jam2.jpg}
+	\subcaption{Just jammed}\label{fig::sicm::justjam}
+	\end{minipage}\hfill
+	\begin{minipage}{0.33\hsize}
+	\includegraphics[width=0.9\hsize]{fig/2-sensorless-icm/jam3.jpg}
+	\subcaption{Still jammed}\label{fig::sicm::stilljam}
+	\end{minipage}
+	\caption{Manipulation by parallel-type hand (Jamming occuring)}
+	\label{fig::sicm::jam}
+\end{figure}
 
 \section{対象物のコンフィギュレーション空間\cite{komiyama2021}}\label{sec::sicm::cspace}
 本節では，ハンド動作計画の際に使用する，対象物のコンフィギュレーション空間について説明する．我々は対象物の状態を，位置$(x, y)$と姿勢(傾き)$\phi$の3変数によって表している．この3変数で構成される3次元空間が対象物のコンフィギュレーション空間である．空間内の任意の座標は，対象物の任意の位置・姿勢を表しており，それぞれ1:1に対応している．\par
 
-このコンフィギュレーション空間の中から，対象物が存在できる領域を対象物のコンフィギュレーション自由空間と呼び，$C_{\mathrm{free}}$と表す．具体的な$C_{\mathrm{free}}$の導出は以下の通りである．まず，任意の座標$(x, y, \phi)$に対して，対象物の図心を$(x, y)$に合わせ，$\phi$だけ傾ける．このとき\figref{fig::sicm::cfree}(a)のようにハンドにも壁にも干渉しない場合，任意の座標$(x, y, \phi)$は$C_{\mathrm{free}}$を構成する点として認められ，\figref{fig::sicm::cfree}(b)のように干渉した場合は，$C_{\mathrm{free}}$を構成する点としては認めない．この判定を空間全体に対して行ったときの前者の集合が$C_{\mathrm{free}}$となる．\par
-
-実装にあたり，対象物のコンフィギュレーション空間を\figref{fig::sicm::discretize}のように格子状に分割し，離散的に取り扱っている．本来，コンフィギュレーション空間は連続した空間である．そのため，格子点の幅を狭めれば狭めるほど実際の表現に近くなる．一方で，格子点幅を狭めすぎると格子点数が増え，その分計算負荷が大きくなる．したがって，マニピュレーションの動作計画に支障のない範囲で格子点幅を確保しつつ，計算負荷も抑えられるようなバランスの良いパラメータ設定が重要となる．\par
-
-一例として，6自由度並列型ハンドで長方形物体をケージングした際の対象物コンフィギュレーション$C_{\mathrm{free}}$を\figref{fig::sicm::cfreeexam}に示す．この$C_{\mathrm{free}}$を評価することで，現在のハンド姿勢がセンサレスin-handケージングマニピュレーションするにあたって，妥当な姿勢か否かを判定する．この判定については，次節で説明する．
-
-
-
+このコンフィギュレーション空間の中から，対象物が存在できる領域を対象物のコンフィギュレーション自由空間と呼び，$C_{\mathrm{free}}$と表す．具体的な$C_{\mathrm{free}}$の導出は以下の通りである．まず，任意の座標$(x, y, \phi)$に対して，対象物の図心を$(x, y)$に合わせ，$\phi$だけ傾ける．このとき\figref{fig::sicm::cfree}(a)のようにハンドにも壁にも干渉しない場合，任意の座標$(x, y, \phi)$は$C_{\mathrm{free}}$を構成する点として認められ，\figref{fig::sicm::cfree}(b)のように干渉した場合は，$C_{\mathrm{free}}$を構成する点としては認めない．この判定を空間全体に対して行ったときの前者の集合が$C_{\mathrm{free}}$となる．
 \begin{figure}[b]
 \begin{minipage}{0.5\hsize}
 \centering
@@ -72,8 +85,20 @@
 \label{fig::sicm::cfree}
 \end{figure}
 
-%fig::sicm::discretizeは込山2020のFig.3.2
-%fig::sicm::cfreeexamは込山2020のFig.3.4
+実装にあたり，対象物のコンフィギュレーション空間を\figref{fig::sicm::discretize}のように格子状に分割し，離散的に取り扱っている．本来，コンフィギュレーション空間は連続した空間である．そのため，格子点の幅を狭めれば狭めるほど実際の表現に近くなる．一方で，格子点幅を狭めすぎると格子点数が増え，その分計算負荷が大きくなる．したがって，マニピュレーションの動作計画に支障のない範囲で格子点幅を確保しつつ，計算負荷も抑えられるようなバランスの良いパラメータ設定が重要となる．\par
+
+一例として，6自由度並列型ハンドで長方形物体をケージングした際の対象物コンフィギュレーション$C_{\mathrm{free}}$を\figref{fig::sicm::cfreeexam}に示す．緑色領域が$C_{\mathrm{free}}$であり，この$C_{\mathrm{free}}$を評価することで，現在のハンド姿勢がセンサレスin-handケージングマニピュレーションするにあたって，妥当な姿勢か否かを判定する．この判定については，次節で説明する．
+
+\begin{figure}[hb]
+\centering
+\includegraphics[width=0.6\hsize]{fig/2-sensorless-icm/DiscretizeSpace.pdf}
+\caption{Discretization of the 3D computation region \cite{komiyama2021}}
+\label{fig::sicm::discretize}
+
+\includegraphics[width=0.7\hsize]{fig/2-sensorless-icm/cfree.pdf}
+\caption{The configuration free space ($\mathcal{C}_{\mathrm{free}}$) of the object \cite{komiyama2021}}
+\label{fig::sicm::cfreeexam}
+\end{figure}
 
 
 \section{ケージング成立条件とケージングマニピュレーション可能条件\cite{komiyama2021}}\label{sec::sicm::caging}
@@ -97,7 +122,8 @@
 \label{eq::cfree}
 \end{gather}
 
-\figref{}のようなハンド姿勢における，長方形物体のコンフィギュレーション自由空間$\mathcal{C}_{\mathrm{free}}$は，\figref{}のようになる．対象物のケージングが成立している場合，$\mathcal{C}_{\mathrm{free}}$は少なくとも2つ以上の連結した領域に分割される．これらの領域は2つのグループに分けられる．1つは，ハンドによって囲われ，ハンド内部で独立している領域．もう1つは，ハンド外部と接続された領域である．前者は対象物がハンド内部から出ることができないことを意味するためICS (Inescapable Configuration Space)と，後者は対象物がハンド外部へ自由に逃げられることを意味するためECS (Escapable Configuration Space)と呼ぶ(\figref{})．これらに属するコンフィギュレーション自由空間をそれぞれ$\mathcal{C}_{\mathrm{free\_ICS}}$，$\mathcal{C}_{\mathrm{free\_ECS}}$と定義する．$\mathcal{C}_{\mathrm{free\_ICS}}$，$\mathcal{C}_{\mathrm{free\_ECS}}$は，以下のような式で表される．
+対象物のケージングが成立している場合，\figref{fig::sicm::cfreeexam}のように$\mathcal{C}_{\mathrm{free}}$は少なくとも2つ以上の連結した領域に分割される．これらの領域は2つのグループに分けられる．1つは，ハンドによって囲われ，ハンド内部で独立している領域．もう1つは，ハンド外部と接続された領域である．前者は対象物がハンド内部から出ることができないことを意味するためICS (Inescapable Configuration Space)と，後者は対象物がハンド外部へ自由に逃げられることを意味するためECS (Escapable Configuration Space)と呼ぶ(\figref{fig::sicm::cfreeics})．これらに属するコンフィギュレーション自由空間をそれぞれ$\mathcal{C}_{\mathrm{free\_ICS}}$，$\mathcal{C}_{\mathrm{free\_ECS}}$と定義する．$\mathcal{C}_{\mathrm{free\_ICS}}$，$\mathcal{C}_{\mathrm{free\_ECS}}$は，以下のような式で表される．
+
 
 \begin{gather}
 \mathcal{C}_{\mathrm{free\_ECS}} := 
@@ -126,15 +152,33 @@ $\mathcal{C}_{\mathrm{free\_ICS}}$は複数の領域から構成される場合�
 \mathcal{C}_{\mathrm{free\_obj}} \neq \varnothing
 \end{gather}
 
+\begin{figure}[hb]
+\centering
+\includegraphics[width=0.6\hsize]{fig/2-sensorless-icm/cfree_ics.pdf}
+\caption{$\mathcal{C}_{\mathrm{free}}$ can be classified into $\mathcal{C}_{\mathrm{free\_ICS}}$ or $\mathcal{C}_{\mathrm{free\_ECS}}$ \cite{komiyama2021}}\label{fig::sicm::cfreeics}
+\end{figure}
+
+\clearpage
 \subsection*{ケージングマニピュレーション可能条件}
 ケージングマニピュレーション可能条件とは，センサレスな本手法において対象物の状態を確実に追跡するための条件である．先述の方法で，$\mathcal{C}_{\mathrm{free\_obj}}(t)$の抽出を行うと，複数の領域が得られる場合がある．この場合，対象物が$\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$から実際にどの領域へ遷移したか特定できない．この状態が続くと，対象物を最終的な目標位置・姿勢へマニピュレーションできなくなる．このような事態を防ぐため，以下の条件をケージングマニピュレーション可能条件として定めている．
 \begin{itemize}
 \item $\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$に対する$\mathcal{C}_{\mathrm{free\_obj}}(t)$が1つの領域のみにより構成される
 \end{itemize}
 
-\figref{}，\figref{}は，ハンド姿勢のわずかな変化で$\mathcal{C}_{\mathrm{free\_obj}}$が二つの領域に分裂する場合の例を示している．\par
+\figref{fig::scim::divided1}，\figref{fig::sicm::divided2}は，ハンド姿勢のわずかな変化で$\mathcal{C}_{\mathrm{free\_obj}}$が二つの領域に分裂する場合の例を示している．\par
 $\mathcal{C}_{\mathrm{free\_obj}}$が一度分裂しても，後のハンド姿勢の変化によって，分裂した領域が再び一つになる場合がある．このような場合，それ以後のマニピュレーションは問題なく進むものと考えられるが，動作計画の際に，分裂した$\mathcal{C}_{\mathrm{free\_obj}}$の領域全てを追跡することは，非常に多くの計算量を要する作業である．そのため，一度$\mathcal{C}_{\mathrm{free\_obj}}$が分裂した時点で，当該ハンド姿勢は妥当ではないとしてハンドの動作を計画した．
 
+\begin{figure}[b]
+    \centering        
+    \includegraphics[width=0.8\hsize]{fig/2-sensorless-icm/cfree_obj_divided1.pdf}
+    \caption{The posture of the hand when the $\mathcal{C}_{\mathrm{free\_obj}}$ is divided into multiple connected regions \cite{komiyama2021}}
+    \label{fig::scim::divided1}
+
+    \centering
+    \includegraphics[width=0.85\hsize]{fig/2-sensorless-icm/cfree_obj_divided2.pdf}
+    \caption{$\mathcal{C}_{\mathrm{free\_obj}}$, in the postures of the hand in \figref{fig::scim::divided1}, is divided into multiple connected regions \cite{komiyama2021}}
+    \label{fig::sicm::divided2}
+\end{figure}
 
 \section{ハンドの動作計画\cite{komiyama2021}}\label{sec::sicm::planning}
 先述の通り，本手法ではケージング成立条件とケージングマニピュレーション可能条件を満たした状態を維持しつつハンドを動かすことで，センサレスに対象物を目標位置・姿勢へとマニピュレーションできる．本節では，このハンドの動作生成について説明する．\cite{komiyama2021}では，経路計画手法の一つであるRRT (Rapidly-exploring Random Trees)\cite{lavalle2001}を用いた．ここで，ハンド動作はあらかじめオフラインで生成している．具体的なアルゴリズムは以下の通りである．
@@ -156,16 +200,16 @@ $\mathcal{C}_{\mathrm{free\_obj}}$が一度分裂しても，後のハンド姿�
 \label{fig::sicm::rrt}
 \end{figure}
 
-手順\ref{algo::goal}の探索終了条件の説明にあたり，収束度$e$を定義する．収束度$e$は，その時のハンド姿勢によって対象物が目標位置・姿勢へどの程度，位置決めされているかを示すもので以下の\eqref{eq::sicm::converge}で表される．$e$の値が小さければ小さいほど，位置決め精度が高いことを意味する．
+手順\ref{algo::goal}の探索終了条件の説明にあたり，収束度$e$を定義する．収束度$e$は，その時のハンド姿勢によって対象物が目標位置・姿勢へどの程度，位置決めされているかを示すもので以下の\eqref{eq::sicm::e}で表される．$e$の値が小さければ小さいほど，位置決め精度が高いことを意味する．
 \begin{gather}
-\label{eq::sicm::converge}
 e = \max \sqrt{(w_1(x-x_{\mathrm{goal}}))^2+(w_2(y-y_{\mathrm{goal}}))^2 + (w_3(\phi-\phi_{\mathrm{goal}}))^2}\label{eq::sicm::e} \\
 (x, y, \phi) \in \mathcal{C}_{\mathrm{free\_obj}} \notag
 \end{gather}
-ここで，$w_1$，$w_2$，$w_3$は定数であり，これらによって\eqref{eq::sicm::converge}の各項を無次元化し，位置$(x, y)$と姿勢$\phi$という異なる単位同士を一つの式で取り扱えるようにしている．\par
-そして，収束度$e$と閾値$\varepsilon$を用いて探索終了条件は以下の\eqref{equ::sicm::goalcondition}となっている．
+ここで，$w_1$，$w_2$，$w_3$は定数であり，これらによって\eqref{eq::sicm::e}の各項を無次元化し，位置$(x, y)$と姿勢$\phi$という異なる単位同士を一つの式で取り扱えるようにしている．\par
+そして，収束度$e$と閾値$\varepsilon$を用いて探索終了条件は以下の\eqref{eq::sicm::goalcondition}となっている．
 \begin{gather}
-e \leq \varepsilon
+\label{eq::sicm::goalcondition}
+e \leq \varepsilon 
 \end{gather}
 閾値$\varepsilon$を小さくする，つまり位置決め精度を高めようとすると計算時間が長くなり，閾値$\varepsilon$を大きくすると計算時間が短くなる．すなわち，位置決め精度と計算時間の間にはトレードオフの関係があり，両者のバランスを取ったパラメータ設定が重要となる．
 

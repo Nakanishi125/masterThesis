@@ -10,6 +10,8 @@
 \usepackage{multirow}
 \usepackage{times} % times new roman
 \usepackage{pdfpages}
+\usepackage{algorithmic}
+\usepackage{algorithm}
 
 % 単体コンパイルを可能にするための仕込み
 \newcommand{\ifdraft}{false}
@@ -21,6 +23,7 @@
 \newcommand{\secref}[1]{\ref{#1}節}
 \newcommand{\ssecref}[1]{\ref{#1}項}
 \newcommand{\appref}[1]{付録\ref{#1}}
+\newcommand{\algoref}[1]{Algorithm.\ref{#1}}
 
 \begin{document}
 %\includepdf[pages=-]{title.pdf}
@@ -72,7 +75,7 @@
 
 \frontmatter
 \pagestyle{headings}	%ヘッダにページ番号，章・節番号，見出しを表示
-\setcounter{tocdepth}{2}
+%\setcounter{tocdepth}{2}
 \dominitoc
 \tableofcontents
 
