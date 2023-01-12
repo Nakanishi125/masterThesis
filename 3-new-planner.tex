@@ -33,7 +33,7 @@
 本章ではハンドの動作計画における先行研究からの改善点や新たな手法の提案を説明する．本節では，実際の動作計画に使用する設定情報についてまとめる．\par
 
 \paragraph{ハンドの設定}
-まずは，ハンドの設定についてである．ハンドは\ssecref{subsec::sicm::oppositehand}の対向型ハンドを以降の全ての動作計画に対して使用している．ハンドの寸法は以下のように設定した(\figref{fig::planner::handsystem})．
+まずは，ハンドの設定についてである．ハンドは\ssecref{subsec::sicm::oppositehand}の対向型ハンドを以降の全ての動作計画に対して使用している．ハンドの寸法は以下のように設定した(\figref{fig::planner::handsize})．
 \begin{gather}
 \notag
 \left\{
@@ -43,10 +43,15 @@ d_0 &= 38 \mathrm{[mm]} & d_1 &= 130 \mathrm{[mm]} & d_2 &= 130 \mathrm{[mm]} & 
 \end{aligned}
 \right .
 \end{gather}
-
+ハンドの姿勢は，各関節角度$\theta_i$の集合$\bm {\theta}$により決定する．$\theta_i$は，この関節に連結している2リンクの内，根元側のリンクのリンク長方向を$0^\circ$とした時の手先側リンクのリンク長方向の角度と定義している．ここで，根元側リンクから見て，反時計回りを正としている．根元の関節に関しては，鉛直方向を$0^\circ$として定めている．
+\begin{figure}[b]
+\centering
+\includegraphics[width=0.6\hsize]{fig/3-new-planner/handsize.pdf}
+\caption{Robot hand configuration}\label{fig::planner::handsize}
+\end{figure}
 
 \paragraph{対象物のコンフィギュレーション空間の設定}
-対象物コンフィギュレーション空間は$-400 \mathrm{[mm]} \leq x \leq 400 \mathrm{[mm]}$，$-50 \mathrm{[mm]} \leq y \leq 550 \mathrm{[mm]}$，$0 \mathrm{[deg]} \leq \phi \leq 360 \mathrm{[deg]}$の直方体空間と設定した．$(x,y)$の原点は\figref{fig::planner::handsystem}の原点$O$に相当し，$\phi$の原点は以下に記す対象物の姿勢$0^\circ$に相当する．前述の通り，コンフィギュレーション空間は格子状に分割し，離散的に取り扱っている．この格子点幅は$(\Delta x, \Delta y, \Delta \phi) = (10 \mathrm{[mm]}, 10 \mathrm{[mm]}, 5 \mathrm{[deg]})$と設定した．$P_{\mathrm {far}}$は，$\mathcal{C}_{\mathrm{free\_ICS}}$の導出で用いる，ハンドから十分に離れた点群であり，以下の式で表される点群と設定した．なお，$C_{\mathrm {space}}$はコンフィギュレーション空間の全離散点群を表す．
+対象物コンフィギュレーション空間は$-400 \mathrm{[mm]} \leq x \leq 400 \mathrm{[mm]}$，$-50 \mathrm{[mm]} \leq y \leq 550 \mathrm{[mm]}$，$0 \mathrm{[deg]} \leq \phi \leq 360 \mathrm{[deg]}$の直方体空間と設定した．$(x,y)$の原点は\figref{fig::planner::handsize}の原点$O$に相当し，$\phi$の原点は以下に記す対象物の姿勢$0^\circ$に相当する．前述の通り，コンフィギュレーション空間は格子状に分割し，離散的に取り扱っている．この格子点幅は$(\Delta x, \Delta y, \Delta \phi) = (10 \mathrm{[mm]}, 10 \mathrm{[mm]}, 5 \mathrm{[deg]})$と設定した．$P_{\mathrm {far}}$は，$\mathcal{C}_{\mathrm{free\_ICS}}$の導出で用いる，ハンドから十分に離れた点群であり，以下の式で表される点群と設定した．なお，$C_{\mathrm {space}}$はコンフィギュレーション空間の全離散点群を表す．
 \begin{gather}
 \notag
 P_{\mathrm {far}} = \{ (x, y, \phi) \in C_{\mathrm {space}} \,|\, x = -400 \mathrm{[mm]} \lor x = 400 \mathrm{[mm]} \lor y = 550\mathrm{[mm]} \}
@@ -107,7 +112,6 @@ w_1=1 \mathrm{[mm^{-1}]} \tab w_2=1 \mathrm{[mm^{-1}]} \tab w_3=1 \mathrm{[deg^{
 
 $\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$の内，探索されていない点がある場合はその点を起点として上記の操作を繰り返す．$P_{\mathrm {far}}$へ到達しなかった領域が$\mathcal{C}_{\mathrm{free\_obj}}(t)$となる．以上のアルゴリズムをより具体的にまとめたものを\algoref{algo::planner::dfs}に示す．
 
-
 \subsubsection{計算時間の比較}
 
 
@@ -115,12 +119,12 @@ $\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$の内，探索されていない�
 計算時間の観点から，収束度$\varepsilon$は広めに設定したい．そのため，動作計画で得られたハンド最終姿勢では対象物の位置・姿勢決め精度は十分ではない．そこで，以降に示す方法によって動作計画で得られたハンド最終姿勢から微調整を加え，位置決め精度の向上を試みた．
 \subsubsection{アルゴリズム}
 本アルゴリズムでは，動作計画により得られた最終姿勢から更に狭まる方向へ，更にケージングが強まる方向へ微調整する．そのため，この微調整中はケージング成立条件，ケージングマニピュレーション可能条件の両者が成立していると考え，本アルゴリズムではこれを前提としている．以下，具体的なアルゴリズムについて述べる．\par
-まず，対象物を目標位置・姿勢$P_G (x_{\mathrm m}, y_G, \theta_G)$に仮想的に配置する．ここで，目標位置・姿勢の$x$座標に関して，\secref{subsec::planner::goalcond}の方法により，動作計画毎に位置決めされる対象物の$x$位置は変わる．そこで，$x_{\mathrm m}$には各々$\mathcal{C}_{\mathrm{free\_obj}}$の任意の$x$座標値を設定することとする．次に，片ハンドずつ対象物への距離を詰めていく．具体的には，ハンドの根元側の関節から手先側の関節の順で狭めていき，各々いずれかのハンドが対象物や他方ハンドと接触する直前で止める．この操作により，対象物の動ける範囲はさらに縮小され，位置・姿勢決め精度が向上する．\par
+まず，対象物を目標位置・姿勢$P_G (x_{\mathrm m}, y_G, \theta_G)$に仮想的に配置する．ここで，$x$座標の目標位置$x_m$に関して，\secref{subsec::planner::goalcond}の方法により，動作計画毎に位置決めされる対象物の$x$位置は変わる．そこで，$x_{\mathrm m}$には各々$\mathcal{C}_{\mathrm{free\_obj}}$の任意の$x$座標値を設定することとする．次に，片ハンドずつ対象物への距離を詰めていく．具体的には，ハンドの根元側の関節から手先側の関節の順で狭めていき，各々いずれかのハンドが対象物や他方ハンドと接触する直前で止める．この操作により，対象物の動ける範囲はさらに縮小され，位置・姿勢決め精度が向上する．\par
 上記の片ハンドずつ対象物への距離を詰めていくという部分に関して，本アルゴリズムでは，左ハンド，右ハンドの順で狭めるパターンと右ハンド，左ハンドの順で狭めるパターンの2パターンを試みる．そして，より位置・姿勢決め精度が向上した方を最終的なハンド姿勢として採用する．
 
 \subsubsection{結果}
 本アルゴリズムを用いて，どの程度位置決め精度が向上するかを評価する．評価には\eqref{eq::planner::e}の収束度$e$を用い，小さいほどゴールへの収束度が高く，位置・姿勢決め精度が向上したと判断する．
-figref{fig::afterfc}のように，$\varepsilon$の値はアルゴリズム適用前が48.8だったのに対し，右ハンド，左ハンドの順の場合は25.5で，左ハンド，右ハンドの順で狭める場合は19.6となった．これらより，位置・姿勢決め精度の向上を確認できた．
+\figref{fig::afterfc}のように，$\varepsilon$の値はアルゴリズム適用前が48.8だったのに対し，右ハンド，左ハンドの順の場合は25.5で，左ハンド，右ハンドの順で狭める場合は19.6となった．これらより，位置・姿勢決め精度の向上を確認できた．
 また，上記の2パターンの狭め方を試したことに関して，多くは同じ結果が得られるが，今回の場合のように精度に差が出る場合があることがあり，複数パターンを試すことの有効性が確認できた．今後，他の狭め方もパターンに含めることで更なる精度向上が望める可能性がある．　\par
 課題点としては，今回用いたハンドの関節角上限が$90^{\circ}$であるため，\figref{fig::afterfc}の左ハンドの手先リンクのように，対象物まで狭めきれない場合がある．実機を改良して$90^{\circ}$以上回転を可能にすることで，更なる精度向上が望める．
 \begin{figure}[b]
@@ -173,7 +177,8 @@ figref{fig::afterfc}のように，$\varepsilon$の値はアルゴリズム適�
 
 
 \subsection{位置決め最適姿勢生成アルゴリズム}
-\subsection{計算時間の比較}
+
+\subsection{探索結果}
 
 
 \section{両側探索アルゴリズム}\label{sec::planner::connect}
@@ -181,19 +186,26 @@ figref{fig::afterfc}のように，$\varepsilon$の値はアルゴリズム適�
 \subsection{RRT-Connectを用いた両側探索アルゴリズム}
 RRT-Connect\cite{kuffner2000}を用いて両側探索アルゴリズムを構築する．これは，順探索アルゴリズムにおける探索初期状態$\bm {\theta}_S$と逆探索アルゴリズムにおける探索初期状態$\bm {\theta}_G$から交互に枝を伸ばしていき，これらの枝が連結した時，その連結経路を解として探索を終了するアルゴリズムである．なお，本アルゴリズムでは順探索アルゴリズム，逆探索アルゴリズムの探索終了条件も残しており，合計3つの探索終了条件の内，いずれかを満たせば終了するようになっている．具体的なアルゴリズムは以下のようになっている(\figref{})．
 \begin{enumerate}
-\item 順探索におけるハンドの初期ノード(姿勢)$\bm{q}_{\mathrm init}$と逆探索におけるハンドの初期ノード$\bm{q}_{\mathrm goal}$を設定する．以降，$\bm{q}_{\mathrm init}$を起点としたグラフを$T_{\mathrm forward}$，$\bm{q}_{\mathrm goal}$を起点としたグラフを$T_{\mathrm reverse}$とする
-\item ハンドの任意のノード$\bm{q}_{\mathrm sample}$をサンプリングし，$T_{\mathrm forward}$の内，$\bm{q}_{\mathrm{sample}}$から最も近いノード$\bm{q}_{\mathrm{nearest}}$を見つける\label{algo::planner::sampling}
-\item $\bm{q}_{\mathrm{nearest}}$から$\bm{q}_{\mathrm{sample}}$の方向へ長さ$\Delta l$の枝を伸ばし，そのノードを$\bm{q}_{\mathrm{new}}$とする
+\item 順探索におけるハンドの初期ノード(姿勢)$\bm{q}_{\mathrm {init}}$と逆探索におけるハンドの初期ノード$\bm{q}_{\mathrm {goal}}$を設定する．以降，$\bm{q}_{\mathrm {init}}$を起点としたグラフを$T_{\mathrm {forward}}$，$\bm{q}_{\mathrm {goal}}$を起点としたグラフを$T_{\mathrm {reverse}}$とする
+\item ハンドの任意のノード$\bm{q}_{\mathrm {sample}}$をサンプリングし，$T_{\mathrm {forward}}$の内，$\bm{q}_{\mathrm{sample}}$から最も近いノード$\bm{q}_{\mathrm{nearest}}$を見つける\label{algo::planner::sampling}
+\item $\bm{q}_{\mathrm{nearest}}$から$\bm{q}_{\mathrm{sample}}$の方向へ長さ$\Delta l$の枝を伸ばし，そのノードを$\bm{q}_{\mathrm{new}}$とする \ref{algo::planner::qnew}
 \item $\bm{q}_{\mathrm{new}}$において環境とハンドまたはハンド同士の干渉，ケージングに関する2条件を判定し，妥当でなければ手順\ref{algo::planner::sampling}に戻る
-\item $\bm{q}_{\mathrm{new}}$と一番近いノード$\bm{q}_{\mathrm{opposite\_near}}$を$T_{\mathrm reverse}$から探索する\label{algo::planner::biasbegin}
+\item $\bm{q}_{\mathrm{new}}$と一番近いノード$\bm{q}_{\mathrm{opposite\_near}}$を$T_{\mathrm {reverse}}$から探索する\label{algo::planner::biasbegin}
 \item $\bm{q}_{\mathrm{opposite\_near}}$から$\bm{q}_{\mathrm{new}}$に向けて長さ$\Delta l$の枝を伸ばし，$\bm{q}_{\mathrm{opposite\_new}}$とする\label{algo::planner::proceed}
 \item $\bm{q}_{\mathrm{opposite\_new}}$において環境とハンドまたはハンド同士の干渉，ケージングに関する2条件を判定する
 \item $\bm{q}_{\mathrm{opposite\_new}}$が妥当かつ探索終了条件を満たさない場合，$\bm{q}_{\mathrm{opposite\_new}}$を$\bm{q}_{\mathrm{opposite\_near}}$とし，手順\ref{algo::planner::proceed}に戻る\label{algo::planner::biasend}
-\item $\bm{q}_{\mathrm{opposite\_new}}$が妥当でない場合，役割を入れ替えて(kwsk)手順\ref{algo::planner::sampling}に戻る
+\item $\bm{q}_{\mathrm{opposite\_new}}$が妥当でない場合，役割を入れ替えて(詳細は後述する)，手順\ref{algo::planner::sampling}に戻る \label{algo::planner::change}
 \item $\bm{q}_{\mathrm{opposite\_new}}$が探索終了条件を満たせば終了\label{algo::planner::goalcond}
 \end{enumerate}
 
-本アルゴリズムの特徴は二つある．一つ目は，探索終了条件を3つ設定していることである．それぞれ，$T_{\mathrm forward}$が順探索アルゴリズムの探索終了条件を満たす，$T_{\mathrm reverse}$が逆探索アルゴリズムの探索終了条件を満たす，$T_{\mathrm forward}$と$T_{\mathrm reverse}$が繋がり，結合点間のケージング2条件も満たす，の3つとなっている．いずれかを満たせばよいため，順探索アルゴリズム，逆探索アルゴリズムと比べて条件は緩くなっていると言える．二つ目は，手順\ref{algo::planner::biasbegin}から\ref{algo::planner::biasend}にかけて非常に強いバイアスがかかるという点である．スタートからゴール方向へ，ゴールからスタート方向へ進めるだけ進めるというバイアスがかかっているため，順探索アルゴリズムや逆探索アルゴリズムのようなランダムサンプリングに比べて効率的な探索になっている．これら二つの特徴から計算時間の短縮が見込める．
+手順\ref{algo::planner::change}の役割を入れ替えるという部分は具体的には以下のことを行う．
+\begin{itemize}
+\item 手順\ref{algo::planner::sampling}の$T_{\mathrm {forward}}$と$T_{\mathrm {reverse}}$を入れ替える
+\item 手順\ref{algo::planner::biasbegin}の$T_{\mathrm {reverse}}$と$T_{\mathrm {forward}}$を入れ替える
+\end{itemize}
+
+
+本アルゴリズムの特徴は三つある．一つ目は，探索終了条件を3つ設定していることである．それぞれ，$T_{\mathrm {forward}}$が順探索アルゴリズムの探索終了条件を満たす，$T_{\mathrm {reverse}}$が逆探索アルゴリズムの探索終了条件を満たす，$T_{\mathrm {forward}}$と$T_{\mathrm {reverse}}$が繋がり，結合点間のケージング2条件も満たす，の3つとなっている．いずれかを満たせばよいため，順探索アルゴリズム，逆探索アルゴリズムと比べて条件は緩くなっていると言える．二つ目は，手順\ref{algo::planner::biasbegin}から\ref{algo::planner::biasend}にかけて非常に強いバイアスがかかるという点である．スタートからゴール方向へ，ゴールからスタート方向へ進めるだけ進めるというバイアスがかかっているため，順探索アルゴリズムや逆探索アルゴリズムのようなランダムサンプリングに比べて効率的な探索になっている．三つ目は，経路が比較的滑らかなことである．順探索アルゴリズム，逆探索アルゴリズムではランダムに枝を伸ばしていくため，凹凸の多い経路が生成される．このような経路では，マニピュレーションにかかる時間が増加したり，関節部にかかる負荷が大きくなったりといったことが考えられる．一方，本探索手法では手順\ref{algo::planner::proceed}において一直線に枝を伸ばすような探索が行われるので，順探索アルゴリズム，逆探索アルゴリズムに比べて滑らかな経路が生成される．
 
 \subsection{計算時間の比較}
 
