@@ -46,29 +46,46 @@ d_0 &= 38 \mathrm{[mm]} & d_1 &= 130 \mathrm{[mm]} & d_2 &= 130 \mathrm{[mm]} & 
 ハンドの姿勢は，各関節角度$\theta_i$の集合$\bm {\theta}$により決定する．$\theta_i$は，この関節に連結している2リンクの内，根元側のリンクのリンク長方向を$0^\circ$とした時の手先側リンクのリンク長方向の角度と定義している．ここで，根元側リンクから見て，反時計回りを正としている．根元の関節に関しては，鉛直方向を$0^\circ$として定めている．
 \begin{figure}[b]
 \centering
-\includegraphics[width=0.6\hsize]{fig/3-new-planner/handsize.pdf}
+\includegraphics[width=0.7\hsize]{fig/3-new-planner/handsize.pdf}
 \caption{Robot hand configuration}\label{fig::planner::handsize}
 \end{figure}
 
 \paragraph{対象物のコンフィギュレーション空間の設定}
-対象物コンフィギュレーション空間は$-400 \mathrm{[mm]} \leq x \leq 400 \mathrm{[mm]}$，$-50 \mathrm{[mm]} \leq y \leq 550 \mathrm{[mm]}$，$0 \mathrm{[deg]} \leq \phi \leq 360 \mathrm{[deg]}$の直方体空間と設定した．$(x,y)$の原点は\figref{fig::planner::handsize}の原点$O$に相当し，$\phi$の原点は以下に記す対象物の姿勢$0^\circ$に相当する．前述の通り，コンフィギュレーション空間は格子状に分割し，離散的に取り扱っている．この格子点幅は$(\Delta x, \Delta y, \Delta \phi) = (10 \mathrm{[mm]}, 10 \mathrm{[mm]}, 5 \mathrm{[deg]})$と設定した．$P_{\mathrm {far}}$は，$\mathcal{C}_{\mathrm{free\_ICS}}$の導出で用いる，ハンドから十分に離れた点群であり，以下の式で表される点群と設定した．なお，$C_{\mathrm {space}}$はコンフィギュレーション空間の全離散点群を表す．
+対象物コンフィギュレーション空間は$-400 \mathrm{[mm]} \leq x \leq 400 \mathrm{[mm]}$，$-50 \mathrm{[mm]} \leq y \leq 550 \mathrm{[mm]}$，$0 \mathrm{[deg]} \leq \phi \leq 360 \mathrm{[deg]}$の直方体空間と設定した．$(x,y)$の原点は\figref{fig::planner::handsize}の原点$O$に相当し，$\phi$の原点は以下に記す対象物の姿勢$0^\circ$に相当する．前述の通り，コンフィギュレーション空間は格子状に分割し，離散的に取り扱っている．この格子点幅は$(\Delta x, \Delta y, \Delta \phi) = (10 \mathrm{[mm]}, 10 \mathrm{[mm]}, 5 \mathrm{[deg]})$と設定した．$P_{\mathrm {far}}$は，ハンドから十分に離れた点群であり，以下の式で表される点群と設定した．なお，$C_{\mathrm {space}}$はコンフィギュレーション空間の全離散点群を表す．
 \begin{gather}
 \notag
 P_{\mathrm {far}} = \{ (x, y, \phi) \in C_{\mathrm {space}} \,|\, x = -400 \mathrm{[mm]} \lor x = 400 \mathrm{[mm]} \lor y = 550\mathrm{[mm]} \}
 \end{gather}
 
 \paragraph{対象物の形状情報}
-本論文では，長方形物体，三角形物体，L字型物体，T字型物体を対象に動作計画を行った．これらの対象物の寸法情報や姿勢の定義について述べる．長方形物体は\figref{}のように設定した．図心は対角線の交点であり，姿勢は短辺が水平方向となるように置いた状態を$0^\circ$とした傾き角度となる．三角形物体は\figref{}のように設定した．図心は外接円の中心であり，姿勢は$e_1$が水平方向となるように置いた状態を$0^\circ$とした傾き角度である．そのため，ユーザは三角形物体の形状情報を設定するとき，どの辺が$e_1$かを把握し，そのうえで目標姿勢を与える必要がある．L字型物体は\figref{}のように設定した．図心は\figref{}のように補助線を引いて得られる長方形の対角線交点である．姿勢は文字「L」を$0^\circ$とした傾き角度である．T字型物体は\figref{}のように設定した．図心，姿勢ともにL字型と同様である．なお，傾きは$0 \mathrm{[deg]} \leq \phi \leq 360 \mathrm{[deg]}$で表し，時計回りに測る．
+本論文では，長方形物体，三角形物体，L字型物体，T字型物体を対象に動作計画を行った．これらの対象物の寸法情報や姿勢の定義について述べる．長方形物体は\figref{fig::planner::recdef}のように設定した．代表点は対角線の交点であり，姿勢は短辺が水平方向となるように置いた状態を$0^\circ$とした傾き角度となる．三角形物体は\figref{fig::planner::tridef}のように設定した．図心は外接円の中心であり，姿勢は$e_1$が水平方向となるように置いた状態を$0^\circ$とした傾き角度である．そのため，ユーザは三角形物体の形状情報を設定するとき，どの辺が$e_1$かを把握し，そのうえで目標姿勢を与える必要がある．L字型物体は\figref{}のように設定した．図心は\figref{fig::planner::lshapedef}のように補助線を引いて得られる長方形の対角線交点である．姿勢は文字「L」を$0^\circ$とした傾き角度である．T字型物体は\figref{fig::planner::tshapedef}のように設定した．図心，姿勢ともにL字型と同様である．なお，傾きは$0 \mathrm{[deg]} \leq \phi \leq 360 \mathrm{[deg]}$で表し，時計回りに測る．
 
 \paragraph{PCのスペック}
 OS：Ubuntu 22.04.1 LTS，CPU：AMD Ryzen 7 3700X 8-Core Processor，クロック周波数：4.43[GHz]，RAM：32.0[GB]のPCで計算する．
 
-%\begin{figure}[b]
-%\centering
-%\includegraphics
-%\caption{ハンドの図，写真じゃなくてパワポとかで}
-%\label{fig::planner::handsystem}
-%\end{figure}
+\begin{figure}[b]
+\centering
+\begin{minipage}{0.49\hsize}
+\centering
+\includegraphics[width=0.9\hsize]{fig/3-new-planner/RectangleDef.pdf}
+\caption{The definition of rectangle object}\label{fig::planner::recdef}
+\end{minipage}\hfill
+\begin{minipage}{0.49\hsize}
+\centering
+\includegraphics[width=0.9\hsize]{fig/3-new-planner/TriangleDef.pdf}
+\caption{The definition of triangle object}\label{fig::planner::tridef}
+\end{minipage}\hfill
+\begin{minipage}{0.49\hsize}
+\centering
+\includegraphics[width=0.9\hsize]{fig/3-new-planner/LShapeDef.pdf}
+\caption{The definition of L-Shape object}\label{fig::planner::lshapedef}
+\end{minipage}\hfill
+\begin{minipage}{0.49\hsize}
+\centering
+\includegraphics[width=0.9\hsize]{fig/3-new-planner/TShapeDef.pdf}
+\caption{The definition of T-Shape object}\label{fig::planner::tshapedef}
+\end{minipage}
+\end{figure}
 
 \section{順探索アルゴリズム}\label{sec::planner::straight}
 改めて\chapref{chap::sicm}のハンド動作計画の流れを振り返る．まず，入力はハンドの初期姿勢と対象物の形状情報，そして対象物の目標位置・姿勢である．これらを基に，ハンド初期姿勢からRRTによりランダムにサンプリングし，その都度対象物の形状情報から$\mathcal{C}_{\mathrm{free\_obj}}$を計算する．ケージング成立条件，ケージングマニピュレーション可能条件の満足を確認しつつ探索を進め，対象物の目標位置・姿勢から決まる探索終了条件を満たせば動作計画が完了する．出力としては，ハンドの関節角度の時系列データが得られる．\par
@@ -97,7 +114,7 @@ w_1=1 \mathrm{[mm^{-1}]} \tab w_2=1 \mathrm{[mm^{-1}]} \tab w_3=1 \mathrm{[deg^{
 \cite{komiyama2021}では$\mathcal{C}_{\mathrm{free\_obj}}$の抽出にあたって以下のような方法が取られていた．
 \begin{enumerate}
 \item 対象物のコンフィギュレーション空間の離散点群を全走査し，$\mathcal{C}_{\mathrm{free}}$を取り出す \label{planner::fullscan}
-\item DBSCAN法\cite{}により隣り合う周囲26点群を同クラスタとするクラスタリングを$\mathcal{C}_{\mathrm{free}}$に対して行う\label{planner::clustering}
+\item DBSCAN法\cite{ester1996}により隣り合う周囲26点群を同クラスタとするクラスタリングを$\mathcal{C}_{\mathrm{free}}$に対して行う\label{planner::clustering}
 \item 手順\ref{planner::clustering}のクラスタを$\mathcal{C}_{\mathrm{free\_ICS}}$と$\mathcal{C}_{\mathrm{free\_ECS}}$に分ける
 \item $\mathcal{C}_{\mathrm{free\_ICS}}$の内，\eqref{eq::sicm::continuous}に基づいて$\mathcal{C}_{\mathrm{free\_obj}}$を抽出する
 \end{enumerate}
@@ -105,12 +122,24 @@ w_1=1 \mathrm{[mm^{-1}]} \tab w_2=1 \mathrm{[mm^{-1}]} \tab w_3=1 \mathrm{[deg^{
 
 そこで，\eqref{eq::sicm::continuous}の直前$(t-\Delta t)$のハンド姿勢における$\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$と現在$(t)$のハンド姿勢における$\mathcal{C}_{\mathrm{free\_obj}}(t)$はオーバーラップしているという性質を応用して，$\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$を起点として，オーバーラップしている$\mathcal{C}_{\mathrm{free\_ICS}}$を探すという手法を提案する．\par
 
-まず，$\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$の任意の一点を取り出す．壁やロボットハンドとの干渉がないか確認し，干渉があった場合は別の点を取り出す．この点を起点として，周囲を探索する．このとき，\figref{}のように周囲の26個の方向に番号を付け，\figref{}のような木構造を作成する．この木構造は，根が取り出した起点であり，葉が起点周囲の点群となっており，周囲の探索手順の全組み合わせを表している．例えば根から1,6,13と進んだ場合は，起点から1の方向の点へ移動し，そこから6の方向へ進み，さらに13の方向へ3ステップ進んだ点へ到達していることを表す．\par
+まず，$\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$の任意の一点を取り出す．壁やロボットハンドとの干渉がないか確認し，干渉があった場合は別の点を取り出す．この点を起点として，周囲を探索する．このとき，\figref{fig::planner::numbering}のように周囲の26個の方向に番号を付け，\figref{fig::planner::treegraph}のような木構造を作成する．この木構造は，根が取り出した起点，葉が起点周囲の点群となっており，周囲の探索手順の全組み合わせを表している．例えば根から1,6,13と進んだ場合は，起点から1の方向の点へ移動し，そこから6の方向へ進み，さらに13の方向へ3ステップ進んだ点へ到達していることを表す．\par
 
 この木構造を用いて，「深さ優先」のアプローチで探索を行う．
-もし，探索が無限遠点$P_{\mathrm {far}}$へ到達した場合，つまり探索中の領域が$\mathcal{C}_{\mathrm{free\_ECS}}$であった場合，その領域は破棄することとなる．無駄な探索を増やさないため，その領域が$P_{\mathrm {far}}$へ到達するかどうかはなるべく早く判断したい．幅優先探索のようなアプローチを取ると，起点から全方向へ同じペースで探索が進むため，$P_{\mathrm {far}}$への到達が遅くなり，無駄な探索が多くなる．そこで，深さ優先探索というアプローチを取ると，任意の方向へ一直線に進めるだけ進むため，早い段階で$P_{\mathrm {far}}$へ到達することができる．\par
+もし，探索が$P_{\mathrm {far}}$へ到達した場合，つまり探索中の領域が$\mathcal{C}_{\mathrm{free\_ECS}}$であった場合，その領域は破棄することとなる．無駄な探索を増やさないため，その領域が$P_{\mathrm {far}}$へ到達するかどうかはなるべく早く判断したい．幅優先探索のようなアプローチを取ると，起点から全方向へ同じペースで探索が進むため，$P_{\mathrm {far}}$への到達が遅くなり，無駄な探索が多くなる．そこで，深さ優先探索というアプローチを取ると，任意の方向へ一直線に進めるだけ進むため，早い段階で$P_{\mathrm {far}}$へ到達することができる．\par
 
-$\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$の内，探索されていない点がある場合はその点を起点として上記の操作を繰り返す．$P_{\mathrm {far}}$へ到達しなかった領域が$\mathcal{C}_{\mathrm{free\_obj}}(t)$となる．以上のアルゴリズムをより具体的にまとめたものを\algoref{algo::planner::dfs}に示す．
+これらの処理後，$\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$の内，探索されていない点がある場合はその点を起点として上記の操作を再度繰り返す．$P_{\mathrm {far}}$へ到達しなかった領域が$\mathcal{C}_{\mathrm{free\_obj}}(t)$となる．以上のアルゴリズムをより具体的にまとめたものを\algoref{algo::planner::dfs}に示す．
+
+\begin{figure}[t]
+\centering
+\begin{minipage}{0.49\hsize}
+\includegraphics[width=0.9\hsize]{fig/3-new-planner/numbering.jpg}
+\caption{The definition of numbering}\label{fig::planner::numbering}
+\end{minipage}\hfill
+\begin{minipage}{0.49\hsize}
+\includegraphics[width=0.9\hsize]{fig/3-new-planner/treegraph.jpg}
+\caption{Generating tree structure}\label{fig::planner::treegraph}
+\end{minipage}
+\end{figure}
 
 \subsubsection{計算時間の比較}
 
@@ -124,9 +153,9 @@ $\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$の内，探索されていない�
 
 \subsubsection{結果}
 本アルゴリズムを用いて，どの程度位置決め精度が向上するかを評価する．評価には\eqref{eq::planner::e}の収束度$e$を用い，小さいほどゴールへの収束度が高く，位置・姿勢決め精度が向上したと判断する．
-\figref{fig::afterfc}のように，$\varepsilon$の値はアルゴリズム適用前が48.8だったのに対し，右ハンド，左ハンドの順の場合は25.5で，左ハンド，右ハンドの順で狭める場合は19.6となった．これらより，位置・姿勢決め精度の向上を確認できた．
+\figref{fig::planner::fc}のように，$\varepsilon$の値はアルゴリズム適用前が48.8だったのに対し，右ハンド，左ハンドの順の場合は25.5で，左ハンド，右ハンドの順で狭める場合は19.6となった．これらより，位置・姿勢決め精度の向上を確認できた．
 また，上記の2パターンの狭め方を試したことに関して，多くは同じ結果が得られるが，今回の場合のように精度に差が出る場合があることがあり，複数パターンを試すことの有効性が確認できた．今後，他の狭め方もパターンに含めることで更なる精度向上が望める可能性がある．　\par
-課題点としては，今回用いたハンドの関節角上限が$90^{\circ}$であるため，\figref{fig::afterfc}の左ハンドの手先リンクのように，対象物まで狭めきれない場合がある．実機を改良して$90^{\circ}$以上回転を可能にすることで，更なる精度向上が望める．
+課題点としては，今回用いたハンドの関節角上限が$90^{\circ}$であるため，\figref{fig::planner::afterfclr}，\figref{fig::planner::afterfcrl}の左ハンドの手先リンクのように，対象物まで狭めきれない場合がある．実機を改良して$90^{\circ}$以上回転を可能にすることで，更なる精度向上が望める．
 \begin{figure}[b]
 \centering
 \begin{minipage}{0.33\hsize}
@@ -141,48 +170,67 @@ $\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$の内，探索されていない�
 \includegraphics[width=0.9\hsize]{fig/3-new-planner/rec_FC_right_left.png}
 \subcaption{right$\rightarrow$left}\label{fig::planner::afterfcrl}
 \end{minipage}
+\caption{The result of applying hand closing algorithm}\label{fig::planner::fc}
 \end{figure}
 
 \section{逆探索アルゴリズム}\label{sec::planner::reverse}
 \subsection{RRTを用いた逆探索アルゴリズム}
-\secref{sec::planner::straight}の順探索では，任意の初期姿勢から対象物の目標位置・姿勢座標$P_G$を目指している．しかし，RRTはランダムサンプリングであるため$P_G$から遠ざかるような方向へも探索が進むという点で効率が悪い．そこで，対象物が目標位置・姿勢で位置決めされた時のハンド姿勢$\bm{\theta_G}$を探索の開始点とし，マニピュレーションの初期状態へと遡る方向へ探索する．つまり，RRTを用いて，$t=T (任意)$から$t=0$へ向けて探索を行う．これを以下では逆探索アルゴリズムと呼ぶ．
+順探索アルゴリズムとは逆方向のアプローチを試みる．つまり，対象物が目標位置・姿勢で位置決めされた時のハンド姿勢$\bm{\theta_G}$を探索の開始点として与え，マニピュレーションの初期状態$(t=0)$へと遡る方向へ探索することを考える．探索アルゴリズムにはRRTを用い，基本的には\ssecref{subsec::sicm::planning}と同様で，ランダムサンプリング，ケージングに関する2条件の確認，ノードの追加を行っていき，探索終了条件を満たせば動作計画を終了する．
 
-\subsubsection{探索終了条件}
-逆探索であるため，探索の終了状態はマニピュレーションの初期状態に相当する．マニピュレーションの初期状態に求められることとしては，なるべく多様な対象物位置・姿勢を取り扱えるということが挙げられる．そこで，探索の終了条件を，物体が取りうる姿勢群を表す$C_{\mathrm{free\_obj}}$が閾値以上になった時と定めた．\par
-このように，逆探索アルゴリズムでは探索の終了条件に座標の指定がなく，ただ$C_{\mathrm{free\_obj}}$の領域を広げればよい．そのため，順探索のような無駄な探索方向が少なくっており，探索効率の改善が見込める．
+\subsubsection{ケージング成立条件とケージングマニピュレーション可能条件}\label{subsec::planner::revcm}
+ケージング成立条件に関しては順探索アルゴリズムと同様である．ケージングマニピュレーション可能条件も条件自体は，\secref{sec::sicm::caging}と変わらない．ただ，時間が逆行した方向への探索であるため処理が異なる．処理は\figref{fig::planner::cm}のような3パターンに大別できる．ただし，実際の$\mathcal{C}_{\mathrm{free\_obj}}$領域は3次元であるが，\figref{fig::planner::cm}では簡単のため2次元としてモデル化している．\figref{fig::planner::cm1}は$C_{\mathrm{free\_obj}}(t)$に対してオーバーラップしている$C_{\mathrm{free\_obj}}(t-\Delta t)$が複数ある場合である．ここでケージングマニピュレーション可能条件は，時間$t-\Delta t$における物体の存在領域$\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$がどの領域に遷移したかを追跡するためにオーバーラップする$\mathcal{C}_{\mathrm{free\_obj}}(t)$の領域数を1つに絞るといったものであった．この観点で\figref{fig::planner::cm1}を見ると，各々の$C_{\mathrm{free\_obj}}(t-\Delta t)$から$C_{\mathrm{free\_obj}}(t)$の1領域のみとオーバーラップしており各々追跡可能なので，ケージングマニピュレーション可能条件を満たしているといえる．この判定は，逆探索アルゴリズムでは$C_{\mathrm{free\_obj}}$が複数個存在しうることを意味している．これを踏まえて，ケージングマニピュレーション可能条件をより正確に以下のように再定義する．
+\begin{itemize}
+\item $C_{\mathrm{free\_obj}}(t-\Delta t)$の各々の領域は$C_{\mathrm{free\_obj}}(t)$の任意の1つの領域のみとオーバーラップする
+\end{itemize}
 
-\subsubsection{ケージングマニピュレーション可能条件}\label{subsec::planner::revcm}
-条件自体は，\secref{sec::sicm::caging}と変わらず，時間$t-\Delta t$における物体の存在領域$\mathcal{C}_{\mathrm{free\_obj}}(t-\Delta t)$に対する時間$t$の$C_{\mathrm{free\_obj}}(t)$がただ一つ存在する場合に成立と判定される．しかし，時間が逆行した方向への探索であるため処理が異なる．処理は\figref{fig::planner::cm}のような3パターンに大別できる．ただし，実際の$\mathcal{C}_{\mathrm{free\_obj}}$領域は３次元であるが，\figref{fig::planner::cm}では簡単のため2次元としてモデル化している．\figref{fig::planner::cm1}は$C_{\mathrm{free\_obj}}(t)$に対してオーバーラップしている$C_{\mathrm{free\_obj}}(t-\Delta t)$が複数ある場合である．これは，各々の$C_{\mathrm{free\_obj}}(t-\Delta t)$から見るとオーバーラップしている$C_{\mathrm{free\_obj}}(t)$は1つのみであるため，ケージングマニピュレーション可能条件を満たしている．この判定は，逆探索アルゴリズムでは$C_{\mathrm{free\_obj}}$が複数個存在しうることを意味している．すなわち，\figref{fig::planner::cm2}の状況も発生しうる．これは，$C_{\mathrm{free\_obj}}(t-\Delta t)$に対してオーバーラップしている$C_{\mathrm{free\_obj}}(t)$が複数あるので，ケージングマニピュレーション可能条件を満たしていない．\figref{fig::planner::cm3}では，そもそもオーバーラップがないので不成立である．以上の3つで全ての場合に対して判定することができる．
+\figref{fig::planner::cm2}の状況も発生しうる．これは，$C_{\mathrm{free\_obj}}(t-\Delta t)$に対してオーバーラップしている$C_{\mathrm{free\_obj}}(t)$が複数あるので，ケージングマニピュレーション可能条件を満たしていない．\figref{fig::planner::cm3}では，そもそもオーバーラップがないので不成立である．以上の3つで全ての場合に対して判定することができる．
 
-%\begin{figure}[b]
-%\begin{minipage}{0.33\hsize}
-%\includegraphics[width=0.95\hsize]{fig/}
-%\subcaption{}\label{fig::planner::cm1}
-%\end{minipage}\hfill
-%\begin{minipage}{0.33\hsize}
-%\includegraphics[width=0.95\hsize]{fig/}
-%\subcaption{}\label{fig::planner::cm2}
-%\end{minipage}\hfill
-%\begin{minipage}{0.33\hsize}
-%\includegraphics[width=0.95\hsize]{fig/}
-%\subcaption{}\label{fig::planner::cm3}
-%\end{minipage}
-%\caption{The patterns of the condition for caging manipulability for reverse exploring}
-%\label{fig::planner::cm}
-%\end{figure}
+\begin{figure}[b]
+\begin{minipage}{0.33\hsize}
+\includegraphics[width=0.95\hsize]{fig/3-new-planner/rev_cagingmani_var1.jpg}
+\subcaption{}\label{fig::planner::cm1}
+\end{minipage}\hfill
+\begin{minipage}{0.33\hsize}
+\includegraphics[width=0.95\hsize]{fig/3-new-planner/rev_cagingmani_var2.jpg}
+\subcaption{}\label{fig::planner::cm2}
+\end{minipage}\hfill
+\begin{minipage}{0.33\hsize}
+\includegraphics[width=0.95\hsize]{fig/3-new-planner/rev_cagingmani_var3.jpg}
+\subcaption{}\label{fig::planner::cm3}
+\end{minipage}
+\caption{The patterns of the condition for caging manipulability for reverse exploring}
+\label{fig::planner::cm}
+\end{figure}
 
 \subsubsection{逆探索アルゴリズムにおける$C_{\mathrm{free\_obj}}$の抽出}
 逆探索アルゴリズムの$C_{\mathrm{free\_obj}}$抽出も\ssecref{subsec::planner::dfs}の考え方を基に実装する．まず，$t+\Delta t$における$C_{\mathrm{free\_obj}}(t+\Delta t)$の任意の点を起点として，深さ優先探索で$C_{\mathrm{free\_obj}}(t)$を抽出する．次に，$C_{\mathrm{free\_obj}}(t+\Delta t)$と$C_{\mathrm{free\_obj}}(t)$のオーバーラップを前項を基に考える．ここで，本実装では\ssecref{subsec::planner::dfs}の方法により，$C_{\mathrm{free\_obj}}$のみを抽出するようにしている．しかし通常，$C_{\mathrm{free\_obj}}$の周囲には別領域の$C_{\mathrm{free\_ICS}}$が存在している．したがって，$C_{\mathrm{free\_obj}}(t)$と$C_{\mathrm{free\_ICS}}(t+\Delta t)\, \ni C_{\mathrm{free\_obj}}(t+\Delta t)$のオーバーラップを考える必要がある．\par
-そこで，$C_{\mathrm{free\_obj}}(t)$を起点として，再度$t+\Delta t$のハンド姿勢に対して深さ優先探索で$C'_{\mathrm{free\_obj}}(t+\Delta t)$を抽出する．この$C'_{\mathrm{free\_obj}}(t+\Delta t)$の領域が0個もしくは複数個ある場合，ケージングマニピュレーション可能条件を満たさないので，$C_{\mathrm{free\_obj}}(t)$は妥当ではないと判定する．以上の処理を\algoref{algo::revdfs}にまとめる．
+そこで，$C_{\mathrm{free\_obj}}(t)$を起点として，再度$t+\Delta t$のハンド姿勢に対して\ssecref{subsec::planner::dfs}の方法で$C'_{\mathrm{free\_obj}}(t+\Delta t)$を抽出する．この$C'_{\mathrm{free\_obj}}(t+\Delta t)$の領域が0個もしくは複数個ある場合，ケージングマニピュレーション可能条件を満たさないので，$C_{\mathrm{free\_obj}}(t)$は妥当ではないと判定する．以上の処理を\algoref{algo::revdfs}にまとめる．
+
+\subsubsection{探索終了条件}
+逆探索であるため，探索の終了状態はマニピュレーションの初期状態に相当する．マニピュレーションの初期状態に求められることとしては，なるべく多様な対象物位置・姿勢を取り扱えるということが挙げられる．そこで，探索の終了条件を，物体が取りうる姿勢群を表す$C_{\mathrm{free\_obj}}$のサイズが閾値$\nu$以上になった時と定めた．ここで，$C_{\mathrm{free\_obj}}$のサイズは，$C_{\mathrm{free\_obj}}$を構成する離散点群の数と定義している．\par
+順探索アルゴリズムでは，ランダム探索なので対象物の目標位置・姿勢$P_G$から離れる方向へも探索が進むことがある．逆探索アルゴリズムでは探索の終了条件に座標の指定がなく，ただ$C_{\mathrm{free\_obj}}$の領域を広げればよい．そのため，順探索のような無駄な探索方向が少なくっており，探索効率の改善が見込める．
 
 
 \subsection{位置決め最適姿勢生成アルゴリズム}
 
 \subsection{探索結果}
+順探索アルゴリズムと計算時間の比較を行いたいが，問題設定が異なるため直接比較することはできない．そこで，繰り返し回数に対する$C_{\mathrm{free\_obj}}$のサイズの推移を紹介し，その結果をもとに簡易的に順探索アルゴリズムと比較する．以下のようなタスクを設定し，5回探索を行ったときの結果を\figref{fig::planner::revrrtres}に示す．なお，本来は探索終了閾値$\nu$を設定するが，今回は500000回の繰り返し計算を行うと終了するように設定した．
+\begin{gather}
+\notag
+\left\{
+\begin{aligned}
+&ハンド初期姿勢：[\theta_1, \theta_2, \theta_3, \theta_4, \theta_5, \theta_6,] = [12, -15, -25, 5, 30, -90]\mathrm{[deg]}\\
+&探索終了閾値：繰り返し計算数が500000回に到達\\
+&対象物：\mathrm{L}字形物体
+\end{aligned}
+\right .
+\end{gather}
+
+順探索アルゴリズムでL字形物体の動作計画を行う時，入力するハンド初期姿勢$C_{\mathrm{free\_obj}}$のサイズは1000程度であることが多い．そこで，\figref{fig::planner::revrrtres}において1000に到達した時の繰り返し計算回数に注目することで簡易的に比較できる．5回の平均を取ると，繰り返し回数が～の時に$C_{\mathrm{free\_obj}}$のサイズが1000に到達している．逆探索アルゴリズムでは，繰り返し計算1回にかかる時間は約10[ms]なので，～[s]と算出される．順探索アルゴリズムと比較すると，計算時間は短くなっているといえる．
 
 
 \section{両側探索アルゴリズム}\label{sec::planner::connect}
-\secref{sec::planner::reverse}の逆探索アルゴリズムでは，期待したほどの計算時間の向上は得られなかった．そこで，順探索アルゴリズムと逆探索アルゴリズムを組み合わせた両探索アルゴリズムを提案する．
+更なる計算速度の向上を目指して，順探索アルゴリズムと逆探索アルゴリズムを組み合わせた両探索アルゴリズムを提案する．
 \subsection{RRT-Connectを用いた両側探索アルゴリズム}
 RRT-Connect\cite{kuffner2000}を用いて両側探索アルゴリズムを構築する．これは，順探索アルゴリズムにおける探索初期状態$\bm {\theta}_S$と逆探索アルゴリズムにおける探索初期状態$\bm {\theta}_G$から交互に枝を伸ばしていき，これらの枝が連結した時，その連結経路を解として探索を終了するアルゴリズムである．なお，本アルゴリズムでは順探索アルゴリズム，逆探索アルゴリズムの探索終了条件も残しており，合計3つの探索終了条件の内，いずれかを満たせば終了するようになっている．具体的なアルゴリズムは以下のようになっている(\figref{})．
 \begin{enumerate}
@@ -208,6 +256,86 @@ RRT-Connect\cite{kuffner2000}を用いて両側探索アルゴリズムを構築
 本アルゴリズムの特徴は三つある．一つ目は，探索終了条件を3つ設定していることである．それぞれ，$T_{\mathrm {forward}}$が順探索アルゴリズムの探索終了条件を満たす，$T_{\mathrm {reverse}}$が逆探索アルゴリズムの探索終了条件を満たす，$T_{\mathrm {forward}}$と$T_{\mathrm {reverse}}$が繋がり，結合点間のケージング2条件も満たす，の3つとなっている．いずれかを満たせばよいため，順探索アルゴリズム，逆探索アルゴリズムと比べて条件は緩くなっていると言える．二つ目は，手順\ref{algo::planner::biasbegin}から\ref{algo::planner::biasend}にかけて非常に強いバイアスがかかるという点である．スタートからゴール方向へ，ゴールからスタート方向へ進めるだけ進めるというバイアスがかかっているため，順探索アルゴリズムや逆探索アルゴリズムのようなランダムサンプリングに比べて効率的な探索になっている．三つ目は，経路が比較的滑らかなことである．順探索アルゴリズム，逆探索アルゴリズムではランダムに枝を伸ばしていくため，凹凸の多い経路が生成される．このような経路では，マニピュレーションにかかる時間が増加したり，関節部にかかる負荷が大きくなったりといったことが考えられる．一方，本探索手法では手順\ref{algo::planner::proceed}において一直線に枝を伸ばすような探索が行われるので，順探索アルゴリズム，逆探索アルゴリズムに比べて滑らかな経路が生成される．
 
 \subsection{計算時間の比較}
+両側探索アルゴリズムは，順探索アルゴリズムにマニピュレーション終了状態のハンド姿勢を，逆探索アルゴリズムにマニピュレーション初期状態のハンド姿勢を追加で与え，これら追加情報を活用して探索を効率化するアルゴリズムである．この追加情報によって順探索アルゴリズム，逆探索アルゴリズムそれぞれからどの程度，計算速度が速くなるかを検証する．\par
+\subsubsection*{順探索アルゴリズムと両側探索アルゴリズムの比較}
+\begin{gather}
+\notag
+\left\{
+\begin{aligned}
+&ハンド初期姿勢：[\theta_1, \theta_2, \theta_3, \theta_4, \theta_5, \theta_6,] = [40, -50, -30, 40, -50, -30]\mathrm{[deg]}\\
+&ハンド最終姿勢：[\theta_1, \theta_2, \theta_3, \theta_4, \theta_5, \theta_6,] = [12, -15, -25, 5, 30, -90]\mathrm{[deg]}\\
+&対象物：\mathrm{L}字形物体\\
+&対象物の目標位置・姿勢：[x_{\mathrm {goal}}, y_{\mathrm {goal}}, \phi_{\mathrm {goal}}] = [{\mathrm {any}}, 200 \mathrm{[mm]}, 0 \mathrm{[deg]}]\\
+&順探索の終了閾値：\varepsilon = 50\\
+&逆探索の終了閾値：\nu = 1000
+\end{aligned}
+\right .
+\end{gather}
+20回動作計画を行い，計算時間を計測した．結果は\tabref{tab::planner::LFB}のようになった．
+\begin{table}[bt]
+    \centering
+    \caption{Comparion of calculation time between forward explore and bilateral explore}
+    \label{tab::planner::LFB}
+    \begin{tabular}{|c|c|c|}
+    \hline
+        ~ & Forward explore & Bilateral explore \\ \hline
+        1 & 614.1 [sec] & 19.5 [sec] \\ \hline
+        2 & 569.2 & 85.4 \\ \hline
+        3 & 1097.1 & 11.0 \\ \hline
+        4 & 117.3 & 19.2 \\ \hline
+        5 & 285.8 & 63.5 \\ \hline
+        6 & 176.9 & 26.1 \\ \hline
+        7 & 457.0 & 101.1 \\ \hline
+        8 & 650.1 & 12.3 \\ \hline
+        9 & 1219.7 & 48.1 \\ \hline
+        10 & 2341.8 & 33.3 \\ \hline
+        11 & 113.7 & 12.2 \\ \hline
+        12 & 2048.0 & 14.9 \\ \hline
+        13 & 939.6 & 52.0 \\ \hline
+        14 & 41.9 & 60.9 \\ \hline
+        15 & 848.5 & 20.6 \\ \hline
+        16 & 2760.0 & 22.7 \\ \hline
+        17 & 2410.0 & 8.2 \\ \hline
+        18 & 375.6 & 155.4 \\ \hline
+        19 & 229.4 & 19.2 \\ \hline
+        20 & 225.4 & 81.5 \\ \hline
+        Average & 877.4 [sec] & 43.4 [sec] \\ \hline
+        Variance & 722640.3 $\mathrm{[sec^2]}$ & 1475.9 $\mathrm{[sec^2]}$ \\ \hline
+    \end{tabular}
+\end{table}
+
+2つのデータが等分散か否かを$F$検定により判断する．有意水準$5\%$とし，両側検定を行う．
+\begin{gather}
+\left\{
+\notag
+\begin{aligned}
+&帰無仮説& &H_0:\sigma_1^2 = \sigma_2^2\\
+&対立仮説& &H_1:\sigma_1^2 \neq \sigma_2^2\\
+&検定統計量& &T = \dfrac{s_1^2}{s_2^2} = 489.6\\
+&棄却域& &F(f_1, f_2; \alpha/2)=F(19, 19; 0.025) = 2.53\\
+\end{aligned}
+\right .
+\end{gather}
+$T=489.6 > 2.53$なので，$H_0$は棄却され，2つのデータは等分散ではないといえる．\par
+2つのデータは非等分散なので，ウェルチの$t$検定により両側探索アルゴリズムの平均計算時間が順探索アルゴリズムに比べて有意に短いことを示す．
+有意水準を$5\%$とし，両側探索を行う．
+\begin{gather}
+\left\{
+\notag
+\begin{aligned}
+&帰無仮説& &H_0:\mu_1 = \mu_2\\
+&対立仮説& &H_1:\mu_1 \neq \mu_2\\
+&検定統計量& &T = \dfrac{\overline{x}_{1}-\overline{x}_{2}}{\sqrt{\dfrac{s_1^{2}}{n_{1}}+\dfrac{s_2^{2}}{n_{2}}}} = 4.38\\
+&自由度& &f=\dfrac{1}{\dfrac{C^2}{n_1-1}+\dfrac{(1-C)^2}{n_2-1}}=19.1\simeq 19 & \because C=\dfrac{\dfrac{s_1^2}{n_1}}{\dfrac{s_1^2}{n_1}+\dfrac{s_2^2}{n_2}}\\
+&棄却域& &t(f, \alpha/2) = t(19, 0.025) = 2.093
+\end{aligned}
+\right .
+\end{gather}
+$T=4.38 > 2.093$なので，$H_0$は棄却され，両側探索アルゴリズムの計算時間は順探索アルゴリズムに比べて有意に短いことが示された．
+
+\subsubsection*{逆探索アルゴリズムと両側探索アルゴリズムの比較}
+
+
 
 % 白魔術
 \expandafter\ifx\csname ifdraft\endcsname\relax
