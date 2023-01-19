@@ -18,230 +18,227 @@
 %\chead{\sffamily \gtfamily 横浜国立大学大学院 機械システム工学コース 学位論文概要集，Vol.?，20??} % その年の指定に合わせて変更
 
 % \newcommand{\secref}[1]{\ref{#1}章}
-% \newcommand{\ssecref}[1]{\ref{#1}節}
+\newcommand{\ssecref}[1]{\ref{#1}節}
 \newcommand{\figref}[1]{Fig.~\ref{#1}}
 % \newcommand{\tabref}[1]{表~\ref{#1}}
-\newcommand{\equref}[1]{式~(\ref{#1})}
+\renewcommand{\eqref}[1]{式~(\ref{#1})}
+
+\setlength\intextsep{0pt}
+\setlength\textfloatsep{0pt}
 
 \begin{document}
 \date{}
 
-\title{光弾性法を利用したオンライン力覚センシングとその力制御への適用}
+\title{平面内センサレスin-handケージングマニピュレーションの計画}
 
-\etitle{Photoelasticity-based online force distribution sensing and its application to force control}
+\etitle{Planning of Planar Sensorless In-hand Caging Manipulation}
 
 \author{
 \begin{tabular}{p{.45\linewidth}p{.45\linewidth}}
-\centering 19NA128 小濱 幹也 & \centering （主査　前田 雄介　教授）
+\centering \gtfamily{21NA140 中西 佑太} & \centering （\gtfamily{主査　前田 雄介　教授}）
 \end{tabular}
 }
 
 \eauthor{
 \begin{tabular}{p{.45\linewidth}p{.45\linewidth}}
-\centering 19NA128 Mikiya KOHAMA & \centering (Supervisor Prof. Yusuke MAEDA)
+\centering 21NA140 Yuta NAKANISHI & \centering (Supervisor Prof. Yusuke MAEDA)
 \end{tabular}
 }
 
-\keywords{Photoelasticity, Tactile sensing, Force control, Polarization, Stress analysis}
+\keywords{Manipulation, Robot hand, Motion planning}
 
 \begin{abstract}
-  Photoelastic materials under load visualize its stress distribution as polarized fringe patterns.
-  There have been many application cases of photoelasticity due to its unique property;
-  for example, stress distribution can be acquired experimentally.
-  I apply photoelastic analysis to force control of robots.
-  My approach can acquire detailed external force distribution exerted on a material.
-  In this paper, I introduce an online image-based stress analysis by using photoelasticity for force control.
-  I perform experiments of force distribution sensing and online force control using a 2-DoF robot and a polarization camera.
-  Experimental results show that photoelastic analysis can be applied to a simple force control task: pressing a fixed wall with specified force.
+In this work we developed a planner for planar sensorless in-hand caging manipulation.
+In-hand caging manipulation is a method in which an object is caged by a hand throughout manipulation and located around a goal as a result of the deformation of the cage without sensing the object configuration.
+This method can be applied to part feeders to manipulate objects from random to targeted poses. 
+In this paper, the following three points were proposed, a new robot hand configuration named ``opposite-type hand'', improved motion planner for the hand and proposal of new motion planner algorithms. 
+The first aims to make the manipulation more robust. 
+The second improves pose accuracy by closing the robot hand until the object reaches desired pose. 
+The third improves calculation time and pose accuracy and allows users to select the appropriate algorithm for their needs.
+Experimental results demonstrated the effectiveness of the proposed points. 
 \end{abstract}
 
 \maketitle
 %\thispagestyle{fancy}
 
 \section{序論}
-力制御はロボットの産業利用において重要な要素であり，それを実現するために力覚センサが利用されている．
-しかし，通常の力覚センサは，そのセンサ面にはたらく合力や合モーメントしか測定できない，つまり得られる情報量が少ないといえる．
-この問題に対して，本研究では光弾性を利用したオンライン力分布センシング手法を提案する．
-光弾性とは，偏光が透明かつ等方性の材料を透過するとき，その材料の応力分布に応じて複屈折させられる現象である．
-このような材料は光弾性体とよばれ，この原理により材料内の応力分布を実験的に求める光弾性法は多様な分野に応用されている~\cite{ramesh2020}．
-光弾性法により材料全体の詳細な応力分布を解析できるため，この原理を利用した外力分布センシングを考えることができる．
-よって本研究では，光弾性法を利用した力分布センシング手法を開発し，その手法を力制御に適用することを目的とする．
-光弾性法によりロボットに作用する詳細な力分布が把握できれば，より高レベルな力制御タスクが可能となる．
-また，光弾性を示す材料は数多く存在することから，材料を変えれば多様な力のレンジに対応できるという利点もある．
+In-handマニピュレーションは手の中で物体の位置や向きを変化させる動作である．これをロボットハンドで再現した研究の多くはカメラや力センサなどでセンシングし，実現されている．一方，物体の拘束手法の一つにケージング\cite{rimon1999}というものがある．これは，対象物が逃げられないように幾何学的に囲い込む拘束手法であり，ハンドの位置制御のみで物体を拘束でき，力センサを必要としないという特徴がある．\par
+本研究グループではこれらを組み合わせた「センサレスIn-handケージングマニピュレーション」を提案している．ケージングを維持しつつロボットハンドによる囲いの形状を適切に変化させていくことで，力センシングや力制御なしでマニピュレーションを実現できる．先行研究\cite{komiyama2021}では，1. 対象物がハンドに詰まることでハンドを正常に動かせなくなる「ジャミング」が発生する，2. 動作計画に長い計算時間がかかる，3. 位置決め精度が十分でない，といった課題が存在した．そこで本研究では，これらの課題を解決することを目的とする．
 
-\section{光弾性効果の観測と位相接続}
-提案手法は，ロボットの手先に四分円形状の光弾性体を取り付け，その光弾性体の境界にはたらく力分布を解析するものである．
-まず，偏光カメラにより4方向の偏光強度を撮影し，その偏光画像からDOLP~(Degree Of Linear Polarization, 直線偏光度)やAOP~(Angle Of Polarization, 偏光方向)を得る．
-\figref{fig:polarization-map}に，偏光カメラ画像およびそれをDOLP，AOPに変換した例を示す．
-一般に，DOLPやAOPは明暗を繰り返す縞模様のような分布となる．
 
-\begin{figure}[b]
-    \centering
-    \begin{minipage}[t]{0.31\linewidth}
-        \centering
-        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/polarization-image.pdf}
-        \subcaption{Camera image}
-    \end{minipage}
-    \begin{minipage}[t]{0.32\linewidth}
-        \centering
-        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/dolp.pdf}
-        \subcaption{DOLP}
-    \end{minipage}
-    \begin{minipage}[t]{0.33\linewidth}
-        \centering
-        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/aop.pdf}
-        \subcaption{AOP}
-    \end{minipage}
-\caption{Polarization images of the quarter-circle shaped photoelastic material}\label{fig:polarization-map}
-\end{figure}
+\section{システムの全体像}
+\subsection{汎用パーツフィーダ \cite{kamikukita2022}}
+本手法は，位置・姿勢にばらつきのある対象物を特定の位置・姿勢に整列できるという機能を活かして汎用パーツフィーダへ応用することを考えている．そこで，ベルトコンベアと1対のロボットハンドを用いて\figref{fig::partfeeder}のようなシステムを構築した．ロボットハンドは，3つのリンクと3つの関節からなる３自由度ハンドで，これを並列させることで1対のロボットハンドを構成している．リンクは3Dプリンタで作成し，関節にはサーボモータを用いている．以降，このハンド構成を並列型ハンドと呼ぶこととする．
 
-DOLPやAOPは，光弾性体の主応力差\(d\)や主応力方向\(\phi\)と以下の関係にある．
-ここで，\(\alpha\)は光弾性感度，\(t\)は材料の厚さである．
-\begin{eqnarray}\label{eq:dolp-aop-to-stress}
-    n\pm DOLP&=&\frac{2}{\pi}\alpha td\qquad (n=0,1,2,\ldots) \\
-    m+AOP&=&\phi\qquad (m=0,1,2,\ldots)
-\end{eqnarray}
-光弾性効果を撮影して得られるDOLPおよびAOPから応力情報を得るためには，\eqref{eq:dolp-aop-to-stress}における未知数や符号を決定する必要がある．
-そこで，DOLP画像の縞模様に位相接続を施すことで，\(n\)および符号を決定する．
-なお，後述の応力解析手法ではAOPをそのまま主応力方向\(\phi\)として利用可能なため，本手法ではAOPの位相接続は行わない．
+\subsection{対向型ハンド}
+並列型ハンド\cite{komiyama2021}，\cite{kamikukita2022}には次の2つの問題があった．一つは\figref{fig::jam}(b)(c)のように根元付近に対象物が詰まり，ハンドが動けなくなる「ジャミング」が発生していた点，もう一つは構造上，ハンド根元付近の物体をマニピュレーションできないという点である．これらは並列型ハンドにおいて一般的に起こりうるが，センサを用いて指先付近で操ればあまり問題にならない．しかし，本研究のようなセンサレスin-handケージングマニピュレーションでは回避が困難である．\par
+これらの問題の解消に向け，\figref{fig::oppositehand}のようなハンド構成，対向型ハンドを提案する．前者の問題に関しては，ジャミングの原因となっていたパーム部付近のハンド自由度の低い領域が対向型ハンドには存在しないことから解決が見込める．後者の問題に関しても，一方のハンドの根元側に物体があったとしても，他方のハンドで掬い取るような動作で対応可能である．
 
-\section{力分布の解析}
-次に，光弾性体内の主応力和\(s\)を求める．
-以下の手法は，梅崎らの手法\cite{umezaki1987}を基本とし，評価関数と境界条件を独自に設定したものである．
-まず，材料を要素分割し，隣接する要素\(i,j\)間で成立する\eqref{eq:relationship-on-edge}のような形式の残差\(r_{ij}\)を定義する．
-ここで，添字\(i\)は要素\(i\)の値であることを表す．
-また，\(\theta_{ij}\)は要素\(i\)から\(j\)へのベクトルがx軸となす角である．
-\(F\)は応力のつり合い方程式を変形した関係式である．
-\begin{equation}\label{eq:relationship-on-edge}
-    r_{ij}:=s_j-s_i+F(d_i,\phi_i,d_j,\phi_j,\theta_{ij})\approx0
-\end{equation}
-次に，境界条件として自由境界\(\mathcal{K}\)上の適当な要素\(k\in\mathcal{K}\)において\(s_k\approx0\)と仮定する．
-これらの式を利用して，主応力和を変数とする誤差関数\(D=D(\bm{s})\)を定義する．
-\(D\)を最小化させる主応力和\(\bm{s}=[s_1,s_2,\ldots]^T\)を求める．
-この計算は以下の連立一次方程式に帰着される．
-\begin{equation}\label{eq:solve-equation}
-    \bm{A}\bm{s}=\bm{b}
-\end{equation}
-ここで，\(\bm{A}\)は要素の連結関係で決定する行列，\(\bm{b}\)は各要素の主応力差，主応力方向，位置関係で決定するベクトルである．
-
-以上の計算で得られる主応力和と，光弾性画像から得られる主応力差，主応力方向から，各応力成分を計算する．
-最後に光弾性体の境界周りの応力成分を力分布に変換して解析終了となる．
-この手法では，主応力和の計算時に要素全体の関係を考慮するので，一部の要素にノイズが混入していても誤差が累積しにくい．
-また，\(\bm{A}\)は要素の連結関係だけで決定するので，一度計算した\(\bm{A}^{-1}\)を再利用できる．
-つまり，2度目の解析以降は\(\bm{b}\)の計算と行列-ベクトル積だけで\(\bm{s}\)が求まるので，高速な解析が期待できる．
-
-% ---------------------------------------------------------------------------------------------------- %
-\section{実験および結果}
-% ---------------------------------------------------------------------------------------------------- %
-実験装置を\figref{fig:experimental-setup}に示す．
-透明ポリウレタン製の光弾性体を製作し，2自由度回転関節ロボットの手先に取り付けた．
-ロボットの横にワーク壁面を設置し，壁面は検証用の6軸力覚センサに固定した．
-ロボット下部には光源として液晶ディスプレイを，上部には偏光カメラをそれぞれ設置した．
-
-\begin{figure}[bt]
+\begin{figure}[t]
 	\centering
-	\includegraphics[width=.95\hsize,clip]{fig/abstract/experimental-setup.pdf}
- 	\caption{Experimental setup}\label{fig:experimental-setup}
+	\begin{minipage}{0.7\linewidth}
+	\includegraphics[width=0.9\linewidth]{fig/abstract/part_feeder.pdf}
+	\caption{applying to part feeders}
+	\label{fig::partfeeder}
+	\end{minipage}\hfill
+	\begin{minipage}{0.29\linewidth}
+	\includegraphics[width=0.95\linewidth]{fig/abstract/opposite2.jpg}
+	\caption{Opposite-type hand}
+	\label{fig::oppositehand}
+	\end{minipage}
+	
+	\begin{minipage}{0.33\linewidth}
+	\includegraphics[width=0.85\linewidth]{fig/abstract/parallel1.jpg}
+	\subcaption{before jam}
+	\end{minipage}\hfill
+	\begin{minipage}{0.33\linewidth}
+	\includegraphics[width=0.85\linewidth]{fig/abstract/parallel2.jpg}
+	\subcaption{just jammed}
+	\end{minipage}\hfill
+	\begin{minipage}{0.33\linewidth}
+	\includegraphics[width=0.85\linewidth]{fig/abstract/parallel3.jpg}
+	\subcaption{still jammed}
+	\end{minipage}
+	\caption{Manipulation by parallel-type hand (Jamming occuring)}\label{fig::jam}
 \end{figure}
 
-\subsection{力分布の解析と光弾性感度定数の把握}
-まず，力分布の解析が可能かを検証することと，実験に利用する光弾性感度\(\alpha\)を把握することを目的とした実験を行った．
-手動で光弾性体を壁面に押し付け，そのときの力分布解析結果と力覚センサの測定値を500組記録した．
-その後，一時的に\(\alpha=1\)~[m/N]とおいて力分布を解析した．
 
-結果を\figref{fig:force-x-regression}および\figref{fig:force-distribution}に示す．
-\figref{fig:force-x-regression}の横軸は光弾性解析で得られた材料境界上の押し付け力分布を積分した値を，縦軸は力覚センサの測定値をそれぞれ表す．
-プロット点列の回帰直線は決定係数が0.76となった．
-光弾性解析の結果は力覚センサと十分に対応が取れているといえる．
-回帰直線の傾きが\(1/\alpha\)となることから，\(\alpha=4.8\times10^2\)~[m/N]と同定した．
-ただし，理想的には回帰直線は原点を通るはずであるが，\figref{fig:force-x-regression}はそうならなかった．
-また，\figref{fig:force-distribution}は，光弾性体境界上の押し付け力分布を示している．
-\figref{fig:force-x-good}のように，光弾性体と壁面の接触領域において圧縮力が大きくなる力分布となり，妥当な解析結果が得られるケースがあった一方．
-\figref{fig:force-x-bad}のように力分布の形状が乱れるケースもあった．
+\section{動作計画アルゴリズム}
+本動作計画プログラムは，対象物の形状情報，目標位置・姿勢などを入力として与えると，出力としてハンドの動かし方が得られるというものになっている．
+本手法ではセンサを用いないため，動作計画の際，対象物の正確な位置・姿勢情報を使うことはできない．しかし，あるハンド姿勢に対して，ハンド内部で対象物が取れる位置・姿勢群は計算できる．これを対象物の存在領域$\mathcal{C}_{\mathrm {free\_obj}}$と呼ぶ．適切なハンドの動かし方を探索し，$\mathcal{C}_{\mathrm {free\_obj}}$を徐々に減らしていき，最終的に$\mathcal{C}_{\mathrm {free\_obj}}$が目標位置・姿勢とその周辺のみを取るような状態を目指す．これにより，センサレスに対象物をゴールまでマニピュレーションすることができる．\par 
 
-この原因として，光源が理想的な偏光とは若干異なることや，光弾性体の残留応力が挙げられる．
-また，位相接続手法に起因する誤差や応力解析時の離散化といった，計算手法による原因も考えられる．
+\subsection{順探索アルゴリズム}	\label{rrt}
+ハンドの動かし方は，RRT (Rapidly-exploring Random Tree)を用いて探索する．探索空間は，ハンドの関節角度6個からなる6自由度空間となっている．探索開始点には任意のマニピュレーション初期姿勢を与える．その過程の各ノードにおいて，ケージング維持のために満たすべき条件を確認し，満足しているものだけを妥当なノードとして追加していく．探索終了条件は$\mathcal{C}_{\mathrm {free\_obj}}$が目標位置・姿勢$P_G(x_{\mathrm{any}}, y_G, \phi_G )$付近で収束した時と定めた．パーツフィーダへ応用することを考えると，ライン方向である$x$方向への調節は必須ではないため，目標位置・姿勢から$x$の指定は省いた．また，$\mathcal{C}_{\mathrm {free\_obj}}$の抽出に関する処理を効率化した．
 
-\begin{figure}[bt]
-	\centering
-	\includegraphics[width=.55\hsize,clip]{fig/abstract/force-x-regression.pdf}
- 	\caption{Relationship between photoelastic analysis results and measurements by the FT sensor}\label{fig:force-x-regression}
+\subsubsection{位置・姿勢決め精度の向上アルゴリズム}
+上記の動作計画で得られたハンド最終姿勢では位置決めに十分でない場合が多い．そこで，以下の処理を行うことで位置決め精度の向上を図る．まず，対象物を目標位置・姿勢$P_G$に仮想的に置く．これに対し，片ハンドずつ対象物への距離を詰めていく．ハンドの根元側の関節から手先側の関節の順で，ハンドが対象物や他方ハンドと接触する直前まで狭めていく．対象物の動ける範囲は縮小され，位置・姿勢決め精度向上につながる．
+
+
+\subsection{逆探索アルゴリズムの提案}
+順探索アルゴリズムとは逆方向のアプローチを試みる．具体的には対象物が目標位置・姿勢で位置決めされた時のハンド姿勢を探索開始点として与え，マニピュレーション初期状態へ向けて探索することを考える．つまり，位置決め精度はこの入力姿勢に依存し，基本的に人間が適切に位置決めしたハンド姿勢を与えることで，高い位置決め精度が保証されたマニピュレーションが可能となる．
+探索アルゴリズムには順探索と同様にRRTを用いる．探索終了時のハンド姿勢はマニピュレーションにおける初期姿勢を意味する．この姿勢に求められるのは，ハンド内において対象物の多様な位置・姿勢を許容できるという点である．そこで，対象物が取れる位置・姿勢群を意味する$\mathcal{C}_{\mathrm {free\_obj}}$のサイズが閾値以上になったときに探索を終了するように定めた．\par
+順探索アルゴリズムでは，任意のマニピュレーション初期姿勢を与える必要があった．つまりユーザには対象物がなるべく多様な位置・姿勢を取れるような，かつケージングに関する条件を満たすような姿勢の入力が求められた．しかし，このような姿勢は直感ではわかりにくく手間な作業であった．逆探索アルゴリズムでは，上記のような姿勢を自動で得られるため利便性が高いといえる．一方で，逆探索アルゴリズムでは位置決め精度に直結するハンドの対象物位置決め姿勢を与える必要があり，精度を上げようとすると手間になる場合があるのが欠点である．
+
+\subsection{両側探索アルゴリズムの提案}
+順探索アルゴリズムと逆探索アルゴリズムを組み合わせた両側探索アルゴリズムを提案する．RRTを拡張したRRT-Connectを基に実装した．マニピュレーション初期姿勢と位置決め姿勢から交互に探索を行い，枝を伸ばしていき，両者が連結したとき，その連結経路を解として探索を終了するアルゴリズムとなっている．また，順探索，逆探索アルゴリズムの探索終了条件も残しており，3つの探索終了条件の内，いずれかを満たせば終了するようになっている．加えて，RRT-Connectの処理上，両者入力姿勢間に引き合うバイアスがかかっているため，早期に探索終了条件を満たし，計算時間が短くなることが見込まれる．\par
+順探索アルゴリズムと逆探索アルゴリズムは問題設定が異なるため，計算時間の比較は行えない．しかし，両側探索アルゴリズムはこれらを包括した問題設定であるため，順探索，逆探索アルゴリズム各々から任意の追加情報を与えると，どの程度計算時間が変わるかという観点で比較できる．そこで，L字形物体に対して，
+%マニピュレーション初期姿勢：$[40, -50, -30, 40, -50, -30]\mathrm{[deg]}$，位置決め姿勢：$[12, -15, -25, 5, 30, -90]\mathrm{[deg]}$，対象物の目標位置・姿勢：$[x_{\mathrm{goal}}, y_{\mathrm{goal}}, \phi_{\mathrm{goal}}]=[\mathrm{any}, 200 \mathrm{[mm]}, 0 \mathrm{[deg]}]$というように設定し，
+20回動作計画を行い，その計算時間を計測した．この結果をもとに$t$検定を行ったところ，順探索，逆探索アルゴリズムの両者に対して有意に計算時間が短いことが示された．ここで，有意水準は$5\%$の片側検定を採用した．なお，本研究で用いているPCのスペックは，OS：Ubuntu 22.04.1 LTS，CPU：AMD Ryzen 7 3700X 8-Core Processor，クロック周波数：4.43[GHz]，RAM：32.0[GB]となっている．\par
+以上より，両側探索アルゴリズムは計算時間に利があるが，与える情報が多くなり手間が増えたといった欠点もある．したがって，ニーズに応じてこれら3つのアルゴリズムを使い分けることで動作計画の有用性が発揮されるだろう．
+
+\section{マニピュレーション結果}
+三角形物体とT字型物体を対象にハンドの動作を生成し，実環境で検証した．三角形物体の動作計画は逆探索アルゴリズムで，T字形物体の動作計画は両側探索アルゴリズムで生成した．計算時間は各々$480.6 \mathrm{[s]}$，$3.9 \mathrm{[s]}$であった．マニピュレーション結果を\figref{fig::trim1}から\figref{fig::tm2}に示す．これらより，対象物が異なる初期位置・姿勢に関わらず，同じ目標位置・姿勢へマニピュレーションされることを確認した．
+\begin{figure}[t]
+\centering
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/Triangle/1-1.jpg}
+\end{minipage}\hfill
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/Triangle/1-2.jpg}
+\end{minipage}\hfill
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/Triangle/1-3.jpg}
+\end{minipage}\hfill
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/Triangle/1-4.jpg}
+\end{minipage}
+\caption{Triangle manipulation result \#1}\label{fig::trim1}
+
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/Triangle/2-1.jpg}
+\end{minipage}\hfill
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/Triangle/2-2.jpg}
+\end{minipage}\hfill
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/Triangle/2-3.jpg}
+\end{minipage}\hfill
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/Triangle/2-4.jpg}
+\end{minipage}
+\caption{Triangle manipulation result \#2}\label{fig::trim2}
+
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/TShape/1-1.jpg}
+\end{minipage}\hfill
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/TShape/1-2.jpg}
+\end{minipage}\hfill
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/TShape/1-3.jpg}
+\end{minipage}\hfill
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/TShape/1-4.jpg}
+\end{minipage}
+\caption{T-Shape manipulation result \#1}\label{fig::tm1}
+
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/TShape/2-1.jpg}
+\end{minipage}\hfill
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/TShape/2-2.jpg}
+\end{minipage}\hfill
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/TShape/2-3.jpg}
+\end{minipage}\hfill
+\begin{minipage}{0.249\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{fig/4-manipulation-result/TShape/2-4.jpg}
+\end{minipage}
+\caption{T-Shape manipulation result \#2}\label{fig::tm2}
 \end{figure}
 
-\begin{figure}[bt]
-	\centering
-    \begin{minipage}[t]{0.48\linewidth}
-        \centering
-        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/force-x-good.pdf}
-        \subcaption{Suitable case}\label{fig:force-x-good}
-    \end{minipage}
-    \begin{minipage}[t]{0.48\linewidth}
-        \centering
-        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/force-x-bad.pdf}
-        \subcaption{Unsuitable case}\label{fig:force-x-bad}
-    \end{minipage}
-    \caption{Force distribution}\label{fig:force-distribution}
-\end{figure}
 
-\subsection{力制御}
-ワーク壁面を指定した力で押すという力制御タスクを実行した．
-開ループ，力覚センサPIフィードバック，光弾性PIフィードバックの3種類の制御方法を比較することで，提案手法を評価した．
-光弾性フィードバック制御では，解析で得られた力分布を積分した結果をフィードバックに利用した．
-制御周期は，光弾性効果を撮影するための露光時間を考慮して20~msとした．
-
-結果を\figref{fig:const}に示す．
-図は左から順に開ループ，力覚センサフィードバック，光弾性フィードバックの結果を表す．
-横軸は制御開始から経過した時間，縦軸は押し付け力である．
-赤線は目標手先力，黒線は力覚センサで測定された実際の力，青線は光弾性フィードバック制御時に光弾性解析で得られた力である．
-開ループ制御では0.35~Nの定常偏差が残った．
-これは，ロボットのモデル誤差，関節のガタ，サーボへの指令トルクと実際の発揮トルクとの誤差などが原因である．
-それに対して，力覚センサフィードバックでは，制御開始から1秒程度で目標値に収束した．
-光弾性フィードバックでは，手先力~(黒線)は1秒程度で収束したものの，目標値との定常偏差が0.2~Nとなった．
-これは，光弾性解析で得られた力~(青線)に含まれる誤差によるものである．
-とはいえ，開ループと比較して定常偏差が小さく抑えられたことから，光弾性フィードバックが有効にはたらいたと考えられる．
-
-以上の結果より，光弾性フィードバックは精度や制御周期の面で通常の力覚センサには及ばないものの，力制御に利用可能だと考えている．
-
-\begin{figure}[bt]
-    \centering
-    \begin{minipage}[t]{0.32\linewidth}
-        \centering
-        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/ol-const.pdf}
-        \subcaption{Open loop}\label{fig:const-feedforward}
-    \end{minipage}
-    \begin{minipage}[t]{0.32\linewidth}
-        \centering
-        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/ft-const.pdf}
-        \subcaption{FT sensor feedback}\label{fig:const-ft-feedback}
-    \end{minipage}
-    \begin{minipage}[t]{0.32\linewidth}
-        \centering
-        \includegraphics[width=1.0\hsize,pagebox=artbox,clip]{fig/abstract/pe-const.pdf}
-        \subcaption{Photoelasticity feedback}\label{fig:const-pe-feedback}
-    \end{minipage}
-    \caption{Pressing with constant force}\label{fig:const}
-\end{figure}
-
-% \section{多峰性の接触力分布を想定した位相接続}
-% 真に驚くべきほどでもないかもしれない手法を考案したが，それをここに書くのは余白が狭すぎる
-
-% ---------------------------------------------------------------------------------------------------- %
 \section{結論}
-% ---------------------------------------------------------------------------------------------------- %
-本研究では，オンライン力制御に利用可能な光弾性解析手法を提案し，本手法が簡単な力制御タスクに適用可能であることを示した．
-今後は力分布の情報を活かせるより高度なタスクや，精度や速度面における手法の改良について検討する必要がある．
+汎用パーツフィーダへの応用に向けて，ハード面，ソフト面の両方から，センサレスin-handケージングマニピュレーションの機能向上に取り組んだ．先行研究から問題であったジャミングに関しては，ジャミングの発生原因となっていたパーム部付近のハンド低自由度領域を排した対向型ハンドにより解決した．動作計画では新たに2つのアルゴリズムを提案し，以前から課題であった計算時間の問題を改善した．また，これら3つのアルゴリズムを使い分けることで，ユーザの様々なニーズに対応できるようになった．
+
 
 %% 参考文献
 \begin{thebibliography}{9}
-  \bibitem{ramesh2020}
-  K. Ramesh and S. Sasikumar:
-  ``Digital photoelasticity: recent developments and diverse applications,''
-  Optics and Laser in Engineering, DOI: \url{https://doi.org/10.1016/j.optlaseng.2020.106186}, 2020.
+\bibitem[1]{rimon1999} 
+E. Rimon, A. Blake:
+``Caging Planar Bodies by One-Parameter Two-Fingered Gripping Systems,''
+{\it The International Journal of Robotics Research}, Vol.~18, no.~3, pp.~299--318, 1999.
 
-  \bibitem{umezaki1987}
-  梅崎栄作, 玉木保, 高崎賞:
-  ``光弾性画像解析 (第2報 任意方向釣合い式の直接積分による応力解析),''
-  日本機械学会論文集 (A編), vol.~53, no.~492, pp.~1658--1664, 1987.
+\bibitem[2]{komiyama2021}
+込山 隼:
+``センサレスin-hand ケージングマニピュレーションによる物体の位置・姿勢制御'',
+横浜国立大学大学院理工学府 機械・材料海洋系工学専攻, ポートフォリオ, 2021.
+
+\bibitem[3]{kamikukita2022}
+上久木田 治毅:
+``センサレス in-hand ケージングマニピュレーションに基づく汎用パーツフィーダの開発'', 
+横浜国立大学理工学部 機械・材料・海洋系学科 機械工学EP, 卒業論文, 2022.
+
+%  	\bibitem[]{lavalle2001}
+%  	S. M. LaValle, J. J. Kuffner, 
+%  	``Rapidly-exploring Random Tree: Progress and Prospects'', 
+%  	{\it Algorithmic and Computational Robotics: New Directions 2000 WAFR}, 
+%  	in B. R. Donald, K. M. Lynch, and D. Rus, editors, 
+%  	pp.~293--308, A K Peters, 2001.
+%  	
+%  	  	\bibitem[]{kuffner2000}
+%%  	Walter G. Bircher, Andrew S. Morgan, Kaiyu Hang, Aaron M. Dollar,
+%	J. J. Kuffner, S. M. LaValle, 
+%	``RRT-connect: An Efficient Approach to Single-Query Path Planning'',
+%	{\it Proceedings 2000 ICRA. Millennium Conference. IEEE International Conference on Robotics and Automation. Symposia Proceedings (Cat. No.00CH37065)}, 
+%	 Vol.~2, pp.~995--1001, 2000.
+
 \end{thebibliography}
 
 \end{document}

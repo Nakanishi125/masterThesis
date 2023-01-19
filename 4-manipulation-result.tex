@@ -26,7 +26,7 @@
 \minitoc
 
 \section{実験装置 \cite{kamikukita2022}}\label{sec::result::development}
-本研究では，ベルトコンベアと6自由度ハンドを組み合わせてパーツフィーダを実装した．
+ベルトコンベアと6自由度ハンドを組み合わせてパーツフィーダを実装した．
 ベルトコンベアは，オークラ輸送機株式会社のベルコンミニI\hspace{-.1em}I\hspace{-.1em}I DMG（型式 DMG30DR100B13R05X）を使用しており，
 長さは1000[mm]，ベルト幅は297[mm]である．
 このベルトコンベアの仕様を\tabref{Specifications of the conveyor belt}に，図面を\figref{The drawing of DMG}に示す．ただし，\figref{The drawing of DMG}は，オークラ輸送機株式会社が作成したベルコンミニ DMGの手配図から引用した．
@@ -123,7 +123,7 @@
 %ベルトコンベアとか3Dプリンタで作ったとかサーボモータとか
 
 \section{長方形のマニピュレーション}
-本節では，長方形物体を対象としたマニピュレーション結果を示す．タスクは，ベルトコンベアに乗って流れてきた対象物を，ベルト幅中央に$90^\circ$で整列させる，というように設定した．動作計画には，順探索アルゴリズムを用いた．入力情報を以下にまとめる．
+本節では，長方形物体を対象としたマニピュレーション結果を示す．タスクは，ベルトコンベアに乗って流れてきた対象物を，ベルト幅中央付近に$90^\circ$で整列させる，というように設定した．動作計画には，順探索アルゴリズムを用いた．入力情報を以下にまとめる．
 \begin{gather}
 \notag
 \left\{
@@ -131,10 +131,11 @@
 &ハンド初期姿勢：[\theta_1, \theta_2, \theta_3, \theta_4, \theta_5, \theta_6,] = [25, -30, -75, 30, -30, -20]\mathrm{[deg]}\\
 &対象物の目標位置・姿勢：[x_{\mathrm {goal}}, y_{\mathrm {goal}}, \phi_{\mathrm {goal}}] = [{\mathrm {any}}, 200 \mathrm{[mm]}, 90 \mathrm{[deg]}]\\
 &順探索の終了閾値：\varepsilon = 50\\
+&コンフィギュレーション空間の\phi の範囲：0 \leq \phi \leq 180 \mathrm{[deg]}\\
 \end{aligned}
 \right .
 \end{gather}
-動作計画にかかった計算時間は[s]であり，
+動作計画にかかった計算時間は610.2[s]であり，ハンド最終姿勢における収束度$e=19.6$となった．
 この経路を用いて長方形物体の異なる2つの初期位置・姿勢に対してマニピュレーションを行った．
 結果を\figref{fig::result::rm1}，\figref{fig::result::rm2}に示す．
 \begin{figure}[hbt]
@@ -189,7 +190,7 @@
 
 \figref{fig::result::rm1}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (10 \mathrm{[mm]}, 204 \mathrm{[mm]}, 87 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = +4 \mathrm{[mm]}$，$\Delta \phi = -3 \mathrm{[deg]}$の誤差があった．また，\figref{fig::result::rm2}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (-3 \mathrm{[mm]}, 202 \mathrm{[mm]}, 88 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = +2 \mathrm{[mm]}$，$\Delta \phi = -2 \mathrm{[deg]}$の誤差があった．\par
 
-次に，パーツフィーダとしての動作結果を\figref{fig::result::rp}に示す．これより，L字形物体に対してキャッチ，整列，リリースの一連のタスクを行えることを確認した．
+次に，パーツフィーダとしての動作結果を\figref{fig::result::rp}に示す．これより，長方形物体に対してキャッチ，整列，リリースの一連のタスクを行えることを確認した．
 \begin{figure}[hb]
 \centering
 \begin{minipage}{0.49\hsize}
@@ -220,21 +221,120 @@
 \end{figure}
 
 \section{三角形のマニピュレーション}
+本節では，三角形物体を対象としたマニピュレーション結果を示す．タスクは，ベルトコンベアに乗って流れてきた対象物を，ベルト幅中央付近に$0^\circ$で整列させる，というように設定した．動作計画には，逆探索アルゴリズムを用いた．入力情報を以下にまとめる．
+\begin{gather}
+\notag
+\left\{
+\begin{aligned}
+&ハンド最終姿勢：[\theta_1, \theta_2, \theta_3, \theta_4, \theta_5, \theta_6,] = [49.0, -62.3, -14.1, 8.11, -15.1, -86.5]\mathrm{[deg]}\\
+&対象物の目標位置・姿勢：[x_{\mathrm {goal}}, y_{\mathrm {goal}}, \phi_{\mathrm {goal}}] = [{\mathrm {any}}, 180 \mathrm{[mm]}, 0 \mathrm{[deg]}]\\
+&逆探索の終了閾値：\nu = 400\\
+&コンフィギュレーション空間の\phi の範囲：0 \leq \phi \leq 120 \mathrm{[deg]}\\
+\end{aligned}
+\right .
+\end{gather}
+ここで，ハンド最終姿勢は\ssecref{subsec::planner::revoptimize}の最適化を用いて算出しており，収束度$e=0$の十分位置決めされたハンド最終姿勢が得られた．
+動作計画にかかった計算時間は480.6[s]であり，
+この経路を用いて長方形物体の異なる2つの初期位置・姿勢に対してマニピュレーションを行った．
+結果を\figref{fig::result::trim1}，\figref{fig::result::trim2}に示す．
+\begin{figure}[hbt]
+\centering
+\begin{minipage}{0.249\hsize}
+\centering
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/1-1.jpg}
+\subcaption{}\label{}
+\end{minipage}\hfill
+\begin{minipage}{0.249\hsize}
+\centering
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/1-2.jpg}
+\subcaption{}\label{}
+\end{minipage}\hfill
+\begin{minipage}{0.249\hsize}
+\centering
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/1-3.jpg}
+\subcaption{}\label{}
+\end{minipage}\hfill
+\begin{minipage}{0.249\hsize}
+\centering
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/1-4.jpg}
+\subcaption{}\label{}
+\end{minipage}
+\caption{Triangle manipulation result \#1}\label{fig::result::trim1}
+\end{figure}
+
+\begin{figure}[hbt]
+\centering
+\begin{minipage}{0.249\hsize}
+\centering
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/2-1.jpg}
+\subcaption{}\label{}
+\end{minipage}\hfill
+\begin{minipage}{0.249\hsize}
+\centering
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/2-2.jpg}
+\subcaption{}\label{}
+\end{minipage}\hfill
+\begin{minipage}{0.249\hsize}
+\centering
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/2-3.jpg}
+\subcaption{}\label{}
+\end{minipage}\hfill
+\begin{minipage}{0.249\hsize}
+\centering
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/2-4.jpg}
+\subcaption{}\label{}
+\end{minipage}
+\caption{Triangle manipulation result \#2}\label{fig::result::trim2}
+\end{figure}
+
+\figref{fig::result::trim1}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (-32 \mathrm{[mm]}, 178 \mathrm{[mm]}, 0 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = -2 \mathrm{[mm]}$，$\Delta \phi = \pm 0 \mathrm{[deg]}$の誤差があった．また，\figref{fig::result::trim2}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (-32 \mathrm{[mm]}, 178 \mathrm{[mm]}, 119 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = -2 \mathrm{[mm]}$，$\Delta \phi = -1 \mathrm{[deg]}$の誤差があった．\par
+
+次に，パーツフィーダとしての動作結果を\figref{fig::result::trip}に示す．これより，三角形物体に対してキャッチ，整列，リリースの一連のタスクを行えることを確認した．
+\begin{figure}[hb]
+\centering
+\begin{minipage}{0.49\hsize}
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/3-1.jpg}
+\subcaption{}
+\end{minipage}\hfill
+\begin{minipage}{0.49\hsize}
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/3-2.jpg}
+\subcaption{}
+\end{minipage}\hfill
+\begin{minipage}{0.49\hsize}
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/3-3.jpg}
+\subcaption{}
+\end{minipage}\hfill
+\begin{minipage}{0.49\hsize}
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/3-4.jpg}
+\subcaption{}
+\end{minipage}\hfill
+\begin{minipage}{0.49\hsize}
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/3-5.jpg}
+\subcaption{}
+\end{minipage}\hfill
+\begin{minipage}{0.49\hsize}
+\includegraphics[width=0.98\hsize]{fig/4-manipulation-result/Triangle/3-6.jpg}
+\subcaption{}
+\end{minipage}\hfill
+\caption{Triangle alignment as the parts feeder}\label{fig::result::trip}
+\end{figure}
+
+
 \section{L字形のマニピュレーション}
-本節では，L字形物体を対象としたマニピュレーション結果を示す．タスクは，ベルトコンベアに乗って流れてきた対象物を，ベルト幅中央に$0^\circ$で整列させる，というように設定した．動作計画には，両側探索アルゴリズムを用いた．入力情報を以下にまとめる．
+本節では，L字形物体を対象としたマニピュレーション結果を示す．タスクは，ベルトコンベアに乗って流れてきた対象物を，ベルト幅中央付近に$0^\circ$で整列させる，というように設定した．動作計画には，両側探索アルゴリズムを用いた．入力情報を以下にまとめる．
 \begin{gather}
 \notag
 \left\{
 \begin{aligned}
 &ハンド初期姿勢：[\theta_1, \theta_2, \theta_3, \theta_4, \theta_5, \theta_6,] = [40, -50, -30, 40, -50, -30]\mathrm{[deg]}\\
 &ハンド最終姿勢：[\theta_1, \theta_2, \theta_3, \theta_4, \theta_5, \theta_6,] = [12, -15, -25, 5, 30, -90]\mathrm{[deg]}\\
-&対象物の目標位置・姿勢：[x_{\mathrm {goal}}, y_{\mathrm {goal}}, \phi_{\mathrm {goal}}] = [{\mathrm {any}}, 200 \mathrm{[mm]}, 0 \mathrm{[deg]}]\\
+&対象物の目標位置・姿勢：[x_{\mathrm {goal}}, y_{\mathrm {goal}}, \phi_{\mathrm {goal}}] = [{\mathrm {any}}, 210 \mathrm{[mm]}, 0 \mathrm{[deg]}]\\
 &順探索の終了閾値：\varepsilon = 50\\
 &逆探索の終了閾値：\nu = 1000
 \end{aligned}
 \right .
 \end{gather}
-動作計画にかかった計算時間は63[s]であり，両探索アルゴリズムの3つの探索終了条件の内，両グラフが結合する終了条件を満たし，経路が生成された．
+動作計画にかかった計算時間は63[s]であり，両探索アルゴリズムの3つの探索終了条件の内，両グラフが結合する終了条件を満たし，経路が生成された．ハンド最終姿勢における収束度$e=0$となった．
 この経路を用いてL字形物体の異なる2つの初期位置・姿勢に対してマニピュレーションを行った．結果を\figref{fig::result::lm1}，\figref{fig::result::lm2}に示す．
 \begin{figure}[hbt]
 \centering
@@ -286,7 +386,7 @@
 \caption{LShape manipulation result \#2}\label{fig::result::lm2}
 \end{figure}
 
-\figref{fig::result::lm1}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (\_, 202 \mathrm{[mm]}, 7 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = +2 \mathrm{[mm]}$，$\Delta \phi = +7 \mathrm{[deg]}$の誤差があった．また，\figref{fig::result::lm2}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (\_, 212 \mathrm{[mm]}, -9 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = +12 \mathrm{[mm]}$，$\Delta \phi = -9 \mathrm{[deg]}$の誤差があった．\par
+\figref{fig::result::lm1}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (\_, 202 \mathrm{[mm]}, 7 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = +2 \mathrm{[mm]}$，$\Delta \phi = +7 \mathrm{[deg]}$の誤差があった．また，\figref{fig::result::lm2}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (\_, 212 \mathrm{[mm]}, 351 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = +12 \mathrm{[mm]}$，$\Delta \phi = -9 \mathrm{[deg]}$の誤差があった．\par
 
 次に，パーツフィーダとしての動作結果を\figref{fig::result::lp}に示す．これより，L字形物体に対してキャッチ，整列，リリースの一連のタスクを行えることを確認した．
 \begin{figure}[hb]
@@ -319,7 +419,7 @@
 \end{figure}
 
 \section{T字形のマニピュレーション}
-本節では，T字形物体を対象としたマニピュレーション結果を示す．タスクは，ベルトコンベアに乗って流れてきた対象物を，ベルト幅中央に$0^\circ$で整列させる，というように設定した．動作計画には，両側探索アルゴリズムを用いた．入力情報を以下にまとめる．
+本節では，T字形物体を対象としたマニピュレーション結果を示す．タスクは，ベルトコンベアに乗って流れてきた対象物を，ベルト幅中央付近に$0^\circ$で整列させる，というように設定した．動作計画には，両側探索アルゴリズムを用いた．入力情報を以下にまとめる．
 \begin{gather}
 \notag
 \left\{
@@ -332,7 +432,7 @@
 \end{aligned}
 \right .
 \end{gather}
-動作計画にかかった計算時間は3.9[s]であり，両探索アルゴリズムの3つの探索終了条件の内，両グラフが結合する終了条件を満たし，経路が生成された．
+動作計画にかかった計算時間は3.9[s]であり，両探索アルゴリズムの3つの探索終了条件の内，両グラフが結合する終了条件を満たし，経路が生成された．ハンド最終姿勢における収束度$e=0$となった．
 この経路を用いてT字形物体の異なる2つの初期位置・姿勢に対してマニピュレーションを行った．
 結果を\figref{fig::result::tm1}，\figref{fig::result::tm2}に示す．
 \begin{figure}[hbt]
@@ -385,9 +485,9 @@
 \caption{TShape manipulation result \#2}\label{fig::result::tm2}
 \end{figure}
 
-\figref{fig::result::tm1}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (-5 \mathrm{[mm]}, 198 \mathrm{[mm]}, 3 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = -2 \mathrm{[mm]}$，$\Delta \phi = +3\mathrm{[deg]}$の誤差があった．また，\figref{fig::result::tm2}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (-10 \mathrm{[mm]}, 193 \mathrm{[mm]}, -6 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = -7 \mathrm{[mm]}$，$\Delta \phi = -6 \mathrm{[deg]}$の誤差があった．\par
+\figref{fig::result::tm1}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (-5 \mathrm{[mm]}, 198 \mathrm{[mm]}, 3 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = -2 \mathrm{[mm]}$，$\Delta \phi = +3\mathrm{[deg]}$の誤差があった．また，\figref{fig::result::tm2}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (-10 \mathrm{[mm]}, 193 \mathrm{[mm]}, 354 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = -7 \mathrm{[mm]}$，$\Delta \phi = -6 \mathrm{[deg]}$の誤差があった．\par
 
-次に，パーツフィーダとしての動作結果を\figref{fig::result::tp}に示す．これより，L字形物体に対してキャッチ，整列，リリースの一連のタスクを行えることを確認した．
+次に，パーツフィーダとしての動作結果を\figref{fig::result::tp}に示す．これより，字形物体に対してキャッチ，整列，リリースの一連のタスクを行えることを確認した．
 \begin{figure}[hb]
 \centering
 \begin{minipage}{0.49\hsize}
@@ -421,10 +521,10 @@
 
 \section{考察} \label{sec::result::consideration}
 順探索アルゴリズム，逆探索アルゴリズム，両側探索アルゴリズムのいずれのアルゴリズムで生成した経路でも，対象物をマニピュレーションできることを確認した．ここから，位置決め精度，ジャミングについて考察する．\par
-位置決め精度には課題が残った．(例えば長方形物体では，動作計画でe=10だけれども実際はこれだけずれてた．)\par
+位置決め精度には課題が残った．例えばL字形物体では，動作計画で得られたハンド最終姿勢における収束度$e=0$だが，実際には$\Delta y = +12 \mathrm{[mm]}$，$\Delta \phi = -9 \mathrm{[deg]}$のずれがあった．\par
 原因は三つ考えられる．一つ目は，対象物のコンフィギュレーション離散空間の格子間距離である．前述の通り，現状は$(\Delta x, \Delta y, \Delta \phi) = (10 \mathrm{[mm]}, 10 \mathrm{[mm]}, 5 \mathrm{[deg]})$と設定している．そのため，実際には収束度$e$から$x$, $y$は$10 \mathrm{[mm]}$未満の，$\phi$は5 $\mathrm{[deg]}$未満のずれが生じうる．二つ目は，理論と実機の差異である．動作計画では，ハンドは指定された関節角度を取った状態で完全に固定されている．そのうえで対象物が取れる位置・姿勢を算出している．しかし実機では，対象物からの反力でハンドが指定姿勢から逸れうる．これによって，動作計画で想定されていない対象物位置・姿勢が取られ，最終的な位置決め精度にも影響を及ぼしている可能性がある．そのため，よりトルクの強いサーボモータを使うか，動作計画においてハンドのずれを補償するような処理を追加する必要がある．三つ目は，関節角が指定角度と異なることである．現在のハンドは3Dプリンタで生成したリンクにねじ穴をあけることで関節とリンクを固定しており，経年劣化で関節とリンクの間に遊びが生じてくる．また，\figref{}のようにハンドは片持ち状態となっているため，サーボモータにも負荷がかかり続け，指定角と実際の角度の間に誤差が生まれている可能性がある．後者の問題に関しては，各リンクにボールキャスタを取り付け，ベルトコンベア上を転がるようにすることで，片持ち状態を回避できサーボモータへの負荷も低減できると考えている．\par
 
-次に，ジャミングに関して述べる．対向型ハンドの提案により，ジャミングの大部分は回避されたと考えている．実際，本章の検証実験ではジャミングの発生はなかった．しかし，稀にリンクとリンクの間隙に対象物の角が入り込み，ジャミングが発生する場合を確認している．これはハンドの設計に問題があり，例えば\figref{}のように角リンク間にリンク幅を直径とする円板を設置し，間隙を生じないようにすることで容易に解決できるジャミングであると考えている．従来の並列型ハンドで起きていたジャミングは，対象物とリンク間による摩擦によって発生していた場合が多く，こちらは回避が困難であった．対向型ハンドでは，このタイプのジャミングは確認されていないので，結論としてジャミングを解消できたと言える．
+次に，ジャミングに関して述べる．対向型ハンドの提案により，ジャミングの大部分は回避されたと考えている．実際，本章の検証実験ではジャミングの発生はなかった．しかし，稀にリンクとリンクの間隙に対象物の角が入り込み，ジャミングが発生する場合を確認している．これはハンドの設計に問題があり，例えば各リンク間にリンク幅を直径とする円板を設置し，間隙を生じないようにすることで容易に解決できるジャミングであると考えている．従来の並列型ハンドで起きていたジャミングは，対象物とリンク間による摩擦によって発生していた場合が多く，こちらは回避が困難であった．対向型ハンドでは，このタイプのジャミングは確認されていないので，結論としてジャミングを解消できたと言える．
 
 
 

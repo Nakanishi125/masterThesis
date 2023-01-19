@@ -10,7 +10,7 @@
 \usepackage{multirow}
 \usepackage{times} % times new roman
 \usepackage{pdfpages}
-\usepackage{algorithmic}
+\usepackage{algpseudocode}
 \usepackage{algorithm}
 
 % 単体コンパイルを可能にするための仕込み
@@ -24,6 +24,12 @@
 \newcommand{\ssecref}[1]{\ref{#1}項}
 \newcommand{\appref}[1]{付録\ref{#1}}
 \newcommand{\algoref}[1]{Algorithm.\ref{#1}}
+
+\algnewcommand\algorithmicforeach{\textbf{for each}}
+\algdef{S}[FOR]{ForEach}[1]{\algorithmicforeach\ #1\ \algorithmicdo}
+\algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
 
 \begin{document}
 %\includepdf[pages=-]{title.pdf}
@@ -74,6 +80,8 @@
 \cleardoublepage	%奇数ページから始まるように改ページ
 
 \frontmatter
+\includepdf[pages=-]{abstract.pdf}
+
 \pagestyle{headings}	%ヘッダにページ番号，章・節番号，見出しを表示
 %\setcounter{tocdepth}{2}
 \dominitoc
@@ -87,6 +95,8 @@
 %〇位置・姿勢$\phi$                               ×位置・姿勢$\theta$
 %〇目標位置・姿勢　　　　　　　　　×ゴール位置・姿勢
 %探索アルゴリズムに関する説明では「ゴール」を使う
+%×ゴール条件　　　　　　　　　　　〇探索終了条件
+
 
 
 \include{1-introduction}
