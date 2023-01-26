@@ -205,34 +205,56 @@ In-handマニピュレーションに取り組んだものを紹介した．こ�
 \subsubsection{センサレスin-handケージングマニピュレーションによる物体の位置・姿勢制御 \cite{komiyama2021}}
 以前の研究\cite{asamura2013}では，マニピュレーションにおいて位置の整列のみ行われており，姿勢は考慮されていなかった．それゆえ，円形物体しか取り扱えていなかった．そこで，\cite{komiyama2021}は位置と姿勢の両方を取り扱う手法を提案し，正三角形，正方形，長方形，L字形，十字形物体といった多様な形状の対象物を取り扱えるようにした．
 6自由度ハンドを用いて，上記の対象物に対してマニピュレーションされることを確認していた(\figref{fig::intro::recmani})．
-
-
-\subsubsection{センサレスin-handケージングマニピュレーションに基づく汎用パーツフィーダの開発 \cite{kamikukita2022}}
-この研究では，センサレスin-handケージングマニピュレーションという手法を基に，ベルトコンベアと従来のハンドを用いた汎用パーツフィーダが開発された．ベルトコンベアにより流れてきた対象物に対して，ハンドでキャッチ，マニピュレーション，リリースという一連の動作でパーツフィーダとしての機能を実現していた(\figref{fig::intro::trimani})．また，本手法では180$^\circ$程度の大回転が難しいといった問題点があったが，ベルトコンベアの正転・逆転を利用し，実現していた．
 \begin{figure}[b]
 \begin{minipage}{0.24\hsize}
 \centering
-\includegraphics[width=\hsize]{fig/1-introduction/mani1.jpg}
+\includegraphics[width=\hsize]{fig/1-introduction/komiyama/mani1.jpg}
 \subcaption{}
 \end{minipage}\hfill
 \begin{minipage}{0.24\hsize}
 \centering
-\includegraphics[width=\hsize]{fig/1-introduction/mani2.jpg}
+\includegraphics[width=\hsize]{fig/1-introduction/komiyama/mani2.jpg}
 \subcaption{}
 \end{minipage}\hfill
 \begin{minipage}{0.24\hsize}
 \centering
-\includegraphics[width=\hsize]{fig/1-introduction/mani3.jpg}
+\includegraphics[width=\hsize]{fig/1-introduction/komiyama/mani3.jpg}
 \subcaption{}
 \end{minipage}\hfill
 \begin{minipage}{0.24\hsize}
 \centering
-\includegraphics[width=\hsize]{fig/1-introduction/mani4.jpg}
+\includegraphics[width=\hsize]{fig/1-introduction/komiyama/mani4.jpg}
+\subcaption{}
+\end{minipage}
+
+\begin{minipage}{0.24\hsize}
+\centering
+\includegraphics[width=\hsize]{fig/1-introduction/komiyama/mani5.png}
+\subcaption{}
+\end{minipage}\hfill
+\begin{minipage}{0.24\hsize}
+\centering
+\includegraphics[width=\hsize]{fig/1-introduction/komiyama/mani6.png}
+\subcaption{}
+\end{minipage}\hfill
+\begin{minipage}{0.24\hsize}
+\centering
+\includegraphics[width=\hsize]{fig/1-introduction/komiyama/mani7.png}
+\subcaption{}
+\end{minipage}\hfill
+\begin{minipage}{0.24\hsize}
+\centering
+\includegraphics[width=\hsize]{fig/1-introduction/komiyama/mani8.png}
 \subcaption{}
 \end{minipage}
 \caption{Rectangle manipulation \cite{komiyama2021}}
 \label{fig::intro::recmani}
+\end{figure}
 
+\subsubsection{センサレスin-handケージングマニピュレーションに基づく汎用パーツフィーダの開発 \cite{kamikukita2022}}
+この研究では，センサレスin-handケージングマニピュレーションという手法を基に，ベルトコンベアと従来のハンドを用いた汎用パーツフィーダが開発された．ベルトコンベアにより流れてきた対象物に対して，ハンドでキャッチ，マニピュレーション，リリースという一連の動作でパーツフィーダとしての機能を実現していた(\figref{fig::intro::trimani})．また，本手法では180$^\circ$程度の大回転が難しいといった問題点があったが，ベルトコンベアの正転・逆転を利用し，実現していた．
+
+\begin{figure}[b]
 \begin{minipage}{0.49\hsize}
 \centering
 \includegraphics[width=\hsize]{fig/1-introduction/triangle_Moment_2.jpg}

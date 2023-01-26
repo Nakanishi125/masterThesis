@@ -1,0 +1,15 @@
+Object: Rectangle
+Goal (0, 200, 90)
+
+
+The node before Form Closure Algorithm
+[ 18.99, -29.97, -40.98, 30.71, -30.30, -84.77 ]
+Convergence value e = 44.72
+
+Applying Form Closure (Left -> Right)
+[ 18.29, -30.07, -54.38, 30.71, -35.7, -90]
+Convergence value e = 33.541
+
+Applying Form Closure (Right -> Left)
+[ 18.79, -29.97, -90, 28.11, -30.3, -90]
+Convergence value e = 22.3607

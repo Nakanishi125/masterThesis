@@ -48,13 +48,13 @@
 \keywords{Manipulation, Robot hand, Motion planning}
 
 \begin{abstract}
-In this work we developed a planner for planar sensorless in-hand caging manipulation.
+In this work I developed a planner for planar sensorless in-hand caging manipulation.
 In-hand caging manipulation is a method in which an object is caged by a hand throughout manipulation and located around a goal as a result of the deformation of the cage without sensing the object configuration.
 This method can be applied to part feeders to manipulate objects from random to targeted poses. 
-In this paper, the following three points were proposed, a new robot hand configuration named ``opposite-type hand'', improved motion planner for the hand and proposal of new motion planner algorithms. 
+In this paper, the following three points were proposed, a new robot hand configuration named ``opposite-type hand'', new motion planning algorithms and a post motion planner for positioning.
 The first aims to make the manipulation more robust. 
-The second improves pose accuracy by closing the robot hand until the object reaches desired pose. 
-The third improves calculation time and pose accuracy and allows users to select the appropriate algorithm for their needs.
+The second improves calculation time and pose accuracy and allows users to select the appropriate algorithm for their needs.
+The third improves pose accuracy furthermore by closing the robot hand until the object reaches desired pose after planning.
 Experimental results demonstrated the effectiveness of the proposed points. 
 \end{abstract}
 
@@ -116,7 +116,7 @@ In-handマニピュレーションは手の中で物体の位置や向きを変�
 
 \subsection{逆探索アルゴリズムの提案}
 順探索アルゴリズムとは逆方向のアプローチを試みる．具体的には対象物が目標位置・姿勢で位置決めされた時のハンド姿勢を探索開始点として与え，マニピュレーション初期状態へ向けて探索することを考える．つまり，位置決め精度はこの入力姿勢に依存し，基本的に人間が適切に位置決めしたハンド姿勢を与えることで，高い位置決め精度が保証されたマニピュレーションが可能となる．
-探索アルゴリズムには順探索と同様にRRTを用いる．探索終了時のハンド姿勢はマニピュレーションにおける初期姿勢を意味する．この姿勢に求められるのは，ハンド内において対象物の多様な位置・姿勢を許容できるという点である．そこで，対象物が取れる位置・姿勢群を意味する$\mathcal{C}_{\mathrm {free\_obj}}$のサイズが閾値以上になったときに探索を終了するように定めた．\par
+探索アルゴリズムには順探索と同様にRRTを用いる．探索終了時のハンド姿勢はマニピュレーションにおける初期姿勢を意味する．この姿勢に求められるのは，ハンド内において対象物の多様な位置・姿勢を許容できるという点である．そこで，対象物が取れる位置・姿勢群を意味する$\mathcal{C}_{\mathrm {free\_obj}}$の体積が閾値以上になったときに探索を終了するように定めた．\par
 順探索アルゴリズムでは，任意のマニピュレーション初期姿勢を与える必要があった．つまりユーザには対象物がなるべく多様な位置・姿勢を取れるような，かつケージングに関する条件を満たすような姿勢の入力が求められた．しかし，このような姿勢は直感ではわかりにくく手間な作業であった．逆探索アルゴリズムでは，上記のような姿勢を自動で得られるため利便性が高いといえる．一方で，逆探索アルゴリズムでは位置決め精度に直結するハンドの対象物位置決め姿勢を与える必要があり，精度を上げようとすると手間になる場合があるのが欠点である．
 
 \subsection{両側探索アルゴリズムの提案}
@@ -127,7 +127,7 @@ In-handマニピュレーションは手の中で物体の位置や向きを変�
 以上より，両側探索アルゴリズムは計算時間に利があるが，与える情報が多くなり手間が増えたといった欠点もある．したがって，ニーズに応じてこれら3つのアルゴリズムを使い分けることで動作計画の有用性が発揮されるだろう．
 
 \section{マニピュレーション結果}
-三角形物体とT字型物体を対象にハンドの動作を生成し，実環境で検証した．三角形物体の動作計画は逆探索アルゴリズムで，T字形物体の動作計画は両側探索アルゴリズムで生成した．計算時間は各々$480.6 \mathrm{[s]}$，$3.9 \mathrm{[s]}$であった．マニピュレーション結果を\figref{fig::trim1}から\figref{fig::tm2}に示す．これらより，対象物が異なる初期位置・姿勢に関わらず，同じ目標位置・姿勢へマニピュレーションされることを確認した．
+三角形物体とT字型物体を対象にハンドの動作を生成し，実環境で検証した．三角形物体の動作計画は逆探索アルゴリズムで，T字形物体の動作計画は両側探索アルゴリズムで生成した．計算時間は各々$480.6 \mathrm{[s]}$，$3.9 \mathrm{[s]}$であった．マニピュレーション結果を\figref{fig::trim1}から\figref{fig::tm2}に示す．これらより，対象物が異なる初期位置・姿勢に関わらず，ほぼ同じ目標位置・姿勢へマニピュレーションされることを確認した．
 \begin{figure}[t]
 \centering
 \begin{minipage}{0.249\linewidth}

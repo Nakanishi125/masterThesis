@@ -23,7 +23,7 @@
 \newcommand{\secref}[1]{\ref{#1}節}
 \newcommand{\ssecref}[1]{\ref{#1}項}
 \newcommand{\appref}[1]{付録\ref{#1}}
-\newcommand{\algoref}[1]{Algorithm.\ref{#1}}
+\newcommand{\algoref}[1]{Algorithm~\ref{#1}}
 
 \algnewcommand\algorithmicforeach{\textbf{for each}}
 \algdef{S}[FOR]{ForEach}[1]{\algorithmicforeach\ #1\ \algorithmicdo}
@@ -32,27 +32,29 @@
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
 
 \begin{document}
-%\includepdf[pages=-]{title.pdf}
 
  \pagestyle{empty}		%ページ番号を消す
- \thesistype{{令和4年度 ポートフォリオ}}
- \title{\Huge{平面内センサレスin-handケージングマニピュレーションの計画}}
- \etitle{}
- \author{}
- \eauthor{}
- \miscinfo{
- \begin{tabular}{c}
- \\
- \vspace{-3mm}
- {\Large 2023年1月24日} \\[3em]
- {\Large 指導教員 : 前田 雄介 教授} \\[2em]
- {\Large 横浜国立大学 大学院 理工学府} \\
- {\Large 機械・材料・海洋系工学専攻} \\
- {\Large 機械工学教育分野} \\
- {\Large 21NA140 中西 佑太} \\
- \end{tabular}
- }
- \maketitle
+% \thesistype{{令和4年度 ポートフォリオ}}
+% \title{\huge{平面内センサレスin-handケージング\\マニピュレーションの計画}}
+% \etitle{}
+% \author{}
+% \eauthor{}
+% \miscinfo{
+% \begin{tabular}{c}
+% \\
+% \vspace{-3mm}
+% {\Large 2023年1月24日} \\[3em]
+% {\Large 指導教員 : 前田 雄介 教授} \\[2em]
+% {\Large 横浜国立大学 大学院 理工学府} \\
+% {\Large 機械・材料・海洋系工学専攻} \\
+% {\Large 機械工学教育分野} \\
+% {\Large 21NA140 中西 佑太} \\
+% \end{tabular}
+% }
+% \maketitle
+
+%\includepdf[pages=2, offset=6mm -6mm]{R4修士論文タイトル.pdf}
+\includepdf[pages=-, offset=5mm -5mm]{Titlewithsignature.pdf}
 
 \pagestyle{empty}
 \cleardoublepage
@@ -77,10 +79,13 @@
     January 24, 2023
 \end{center}
 
+
+%\includepdf[pages=3, offset=6mm -6mm]{R4修士論文タイトル.pdf}
 \cleardoublepage	%奇数ページから始まるように改ページ
 
 \frontmatter
-\includepdf[pages=-]{abstract.pdf}
+\includepdf[pages=1, offset=5mm -6mm]{abstract.pdf}
+\includepdf[pages=2, offset=-5mm -6mm]{abstract.pdf}
 
 \pagestyle{headings}	%ヘッダにページ番号，章・節番号，見出しを表示
 %\setcounter{tocdepth}{2}
@@ -106,11 +111,6 @@
 \include{5-conclusion}
 
 \backmatter
-
 \include{6-acknowledgements}
 \include{7-bibliography}
-
-%\appendix
-%\include{appendix}
-
 \end{document}
