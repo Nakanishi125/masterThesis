@@ -135,7 +135,7 @@
 \end{aligned}
 \right .
 \end{gather}
-動作計画にかかった計算時間は610.2[s]であり，生成された動作のハンド最終姿勢に位置決め精度向上アルゴリズムを適用し収束度$e=19.6$となった．
+動作計画にかかった計算時間は610.2[s]であり，生成された動作のハンド最終姿勢に位置決め精度向上アルゴリズムを適用し収束度$e=5.0$となった．
 この経路を用いて長方形物体の異なる2つの初期位置・姿勢に対してマニピュレーションを行った．
 結果を\figref{fig::result::rm1}，\figref{fig::result::rm2}に示す．
 \begin{figure}[b]
@@ -186,7 +186,7 @@
 \caption{Rectangle manipulation result \#2}\label{fig::result::rm2}
 \end{figure}
 
-\figref{fig::result::rm1}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (10 \mathrm{[mm]}, 204 \mathrm{[mm]}, 87 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = +4 \mathrm{[mm]}$，$\Delta \phi = -3 \mathrm{[deg]}$の誤差があった．また，\figref{fig::result::rm2}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (-3 \mathrm{[mm]}, 202 \mathrm{[mm]}, 88 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = +2 \mathrm{[mm]}$，$\Delta \phi = -2 \mathrm{[deg]}$の誤差があった．\par
+\figref{fig::result::rm1}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (-1 \mathrm{[mm]}, 202 \mathrm{[mm]}, 89 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = +2 \mathrm{[mm]}$，$\Delta \phi = -1 \mathrm{[deg]}$の誤差があった．また，\figref{fig::result::rm2}のマニピュレーション後の対象物位置・姿勢は，$(x, y, \phi) = (+4 \mathrm{[mm]}, 207 \mathrm{[mm]}, 81 \mathrm{[deg]})$であり，目標位置・姿勢から$\Delta y = +7 \mathrm{[mm]}$，$\Delta \phi = -9 \mathrm{[deg]}$の誤差があった．\par
 
 次に，パーツフィーダとしての動作結果を\figref{fig::result::rp}に示す．これより，長方形物体に対してキャッチ，整列，リリースの一連のタスクを行えることを確認した．
 \begin{figure}[hb]
@@ -231,7 +231,7 @@
 \end{aligned}
 \right .
 \end{gather}
-ここで，ハンド最終姿勢は\ssecref{subsec::planner::revoptimize}の最適化を用いて算出しており，収束度$e=0$の十分位置決めされたハンド最終姿勢が得られた．
+ここで，ハンド最終姿勢は\ssecref{subsec::planner::revoptimize}の最適化を用いて算出しており，さらに位置決め精度向上アルゴリズムを適用し，収束度$e=0$の十分位置決めされたハンド最終姿勢が得られた．
 動作計画にかかった計算時間は480.6[s]であり，
 この経路を用いて長方形物体の異なる2つの初期位置・姿勢に対してマニピュレーションを行った．
 結果を\figref{fig::result::trim1}，\figref{fig::result::trim2}に示す．
@@ -330,7 +330,7 @@
 \end{aligned}
 \right .
 \end{gather}
-動作計画にかかった計算時間は63[s]であり，両探索アルゴリズムの3つの探索終了条件の内，両グラフが結合する終了条件を満たし，経路が生成された．ハンド最終姿勢における収束度$e=0$となった．
+動作計画にかかった計算時間は63[s]であり，両探索アルゴリズムの3つの探索終了条件の内，両グラフが結合する終了条件を満たし，経路が生成された．得られた経路に位置決め精度向上アルゴリズムを適用し，ハンド最終姿勢における収束度は$e=0$となった．
 この経路を用いてL字形物体の異なる2つの初期位置・姿勢に対してマニピュレーションを行った．結果を\figref{fig::result::lm1}，\figref{fig::result::lm2}に示す．
 \begin{figure}[b]
 \centering
@@ -426,7 +426,7 @@
 \end{aligned}
 \right .
 \end{gather}
-動作計画にかかった計算時間は3.9[s]であり，両探索アルゴリズムの3つの探索終了条件の内，両グラフが結合する終了条件を満たし，経路が生成された．ハンド最終姿勢における収束度$e=0$となった．
+動作計画にかかった計算時間は3.9[s]であり，両探索アルゴリズムの3つの探索終了条件の内，両グラフが結合する終了条件を満たし，経路が生成された．得られた経路に位置決め精度向上アルゴリズムを適用し，ハンド最終姿勢における収束度は$e=0$となった．
 この経路を用いてT字形物体の異なる2つの初期位置・姿勢に対してマニピュレーションを行った．
 結果を\figref{fig::result::tm1}，\figref{fig::result::tm2}に示す．
 \begin{figure}[b]

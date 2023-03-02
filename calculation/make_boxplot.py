@@ -15,6 +15,7 @@ ax1.grid()
 ax1.set_xticklabels(['Previous goal', 'Relieved goal'], fontsize=14)
 ax1.set_ylabel('Calculation time [s]', fontsize=14)
 fig1.savefig('3_2_1.eps')
+fig1.savefig('3_2_1.svg')
 
 
 fig2 = plt.figure()
@@ -25,6 +26,7 @@ ax2.grid()
 ax2.set_xticklabels(['Fullscan and\nclustering', 'Efficient\nextraction'], fontsize=14)
 ax2.set_ylabel('Calculation time [s]', fontsize=14)
 fig2.savefig('3_2_2.eps')
+fig2.savefig('3_2_2.svg')
 
 
 fig3 = plt.figure()
@@ -35,3 +37,4 @@ ax3.grid()
 ax3.set_xticklabels(['Forward\nsearch', 'Reverse\nsearch', 'Bidirectional\nsearch'], fontsize=14)
 ax3.set_ylabel('Calculation time [s]', fontsize=14)
 fig3.savefig('3_4_1.eps')
+fig3.savefig('3_4_1.svg')

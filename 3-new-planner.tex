@@ -139,21 +139,20 @@ w_1=1 \mathrm{[mm^{-1}]} \tab w_2=1 \mathrm{[mm^{-1}]} \tab w_3=1 \mathrm{[deg^{
     \centering
     \caption{Comparison of calculation time between previous goal condition and relieved goal condition}
     \label{tab::planner::goalconddiff}
-    \begin{tabular}{|c|c|c|c|}
-    \hline
-        ~ & Previous goal & Releived goal  \\ \hline
-        1 & 9412.5 [s] & 1686.1 [s]  \\ \hline
-        2 & 6322.1 & 800.2 \\ \hline
-        3 & 1059.8 & 543.8  \\ \hline
-        4 & 2364.4 & 822.6  \\ \hline
-        5 & 429.5 & 743.8 \\ \hline
-        6 & 819.4 & 366.4  \\ \hline
-        7 & 2960.0 & 1816.2  \\ \hline
-        8 & 610.5 & 130.3  \\ \hline
-        9 & 1151.3 & 899.4  \\ \hline
+    \begin{tabular}{c|r r}
+        ~ & Previous goal [s] & Releived goal [s]  \\ \hline
+        1 & 9412.5 & 1686.1  \\ 
+        2 & 6322.1 & 800.2 \\ 
+        3 & 1059.8 & 543.8  \\ 
+        4 & 2364.4 & 822.6  \\ 
+        5 & 429.5 & 743.8 \\ 
+        6 & 819.4 & 366.4  \\ 
+        7 & 2960.0 & 1816.2  \\
+        8 & 610.5 & 130.3  \\ 
+        9 & 1151.3 & 899.4  \\ 
         10 & 756.6 & 593.2  \\ \hline
-        Average & 2588.6 [s]  & 840.2 [s]  \\ \hline
-        SD & 2984.3 [s] & 533.3 [s]  \\ \hline
+        Average & 2588.6  & 840.2  \\ \hline
+        SD & 2984.3 & 533.3  \\ 
     \end{tabular}
 \end{table}
 \begin{figure}[bt]
@@ -276,6 +275,13 @@ $T=1.82 > 1.81$なので，$H_0$は棄却され，探索終了条件の緩和に
 \clearpage
 
 \subsubsection{計算時間の比較}
+\begin{figure}[b]
+\centering
+\includegraphics[width=0.5\hsize]{fig/3-new-planner/3_2_2.eps}
+\caption{The box plot comparing calculation time between full scan and clustering extraction and efficient extraction of $\mathcal{C}_{\mathrm{free\_obj}}$}
+\label{fig::planner::rasterdfs}
+\end{figure}
+
 $\mathcal{C}_{\mathrm{free\_obj}}$の効率的な抽出によって，計算時間に有意な差があるかを判定する．
 三角形物体に対して，以下のように問題を設定した．ここで，通常コンフィギュレーション空間の姿勢$\phi$方向の幅は\secref{sec::planner::intro}の通り，$0 \mathrm{[deg]} \leq \phi \leq 360 \mathrm{[deg]}$で設定している．しかし，三角形物体は$120^\circ$で回転対称となっており，$0 \mathrm{[deg]} \leq \phi \leq 120 \mathrm{[deg]}$で全ての姿勢を表せる．コンフィギュレーション空間の幅が狭まると，離散点群数も減り計算負荷が軽くなるため，本動作計画ではこの$\phi$幅で計算する．以降，$\phi$幅を狭めた場合は記述するが，記述がない場合は$0 \mathrm{[deg]} \leq \phi \leq 360 \mathrm{[deg]}$で計算するものとする．
 \begin{gather}
@@ -296,29 +302,30 @@ $\mathcal{C}_{\mathrm{free\_obj}}$の効率的な抽出によって，計算時�
     \centering
     \caption{Comparison of calculation time between full scan and clustering extraction and efficient extraction of $\mathcal{C}_{\mathrm{free\_obj}}$}
     \label{tab::planner::rasterdfs}
-    \begin{tabular}{|c|c|c|c|}
-    \hline
-        ~ & Full scan and clustering & Efficient extraction  \\ \hline
-        1 & 7516.1 [s] & 353.5 [s]  \\ \hline
-        2 & 640.6 & 527.7  \\ \hline
-        3 & 493.0 & 252.1    \\ \hline
-        4 & 21322.8 & 135.0    \\ \hline
-        5 & 294.4 & 461.2   \\ \hline
-        6 & 274.4 & 65.4    \\ \hline
-        7 & 390.5 & 202.7   \\ \hline
-        8 & 26870.2 &140.9   \\ \hline
-        9 & 5225.8 &1276.1  \\ \hline
+    \begin{tabular}{c|r r}
+        ~ & 
+        \begin{tabular}{c}
+        Full scan and \\clustering [s] 
+        \end{tabular}
+        &
+        \begin{tabular}{c}
+        Efficient \\extraction [s] 
+        \end{tabular}
+        \\ \hline
+        1 & 7516.1 & 353.5 \\ 
+        2 & 640.6 & 527.7  \\ 
+        3 & 493.0 & 252.1    \\ 
+        4 & 21322.8 & 135.0    \\ 
+        5 & 294.4 & 461.2   \\ 
+        6 & 274.4 & 65.4    \\ 
+        7 & 390.5 & 202.7   \\ 
+        8 & 26870.2 &140.9   \\
+        9 & 5225.8 &1276.1  \\
         10 & 1213.7 &  389.0  \\ \hline
-        Average & 6424.2 [s] & 357.1 [s]  \\ \hline
-        SD & 9719.5 [s] &  367.9[s]  \\ \hline
+        Average & 6424.2 & 357.1  \\ \hline
+        SD & 9719.5 &  367.9  \\
     \end{tabular}
 \end{table}
-\begin{figure}[bt]
-\centering
-\includegraphics[width=0.5\hsize]{fig/3-new-planner/3_2_2.eps}
-\caption{The box plot comparing calculation time between full scan and clustering extraction and efficient extraction of $\mathcal{C}_{\mathrm{free\_obj}}$}
-\label{fig::planner::rasterdfs}
-\end{figure}
 
 まず，2つのデータが等分散か否かを$F$検定により判断する．有意水準$5\%$とし，両側検定を行う．
 \begin{gather}
@@ -358,20 +365,21 @@ $T= 1.97 > 1.83$なので，$H_0$は棄却され，探索終了条件の緩和�
 
 \subsubsection{結果}
 本アルゴリズムを用いて，どの程度位置決め精度が向上するかを評価する．評価には\eqref{eq::planner::e}の収束度$e$を用い，小さいほどゴールへの収束度が高く，位置・姿勢決め精度が向上したと判断する．
-\figref{fig::planner::fc}のように，$\varepsilon$の値はアルゴリズム適用前が44.7だったのに対し，右ハンド，左ハンドの順の場合は33.5で，左ハンド，右ハンドの順で狭める場合は22.4となった．これらより，位置・姿勢決め精度の向上を確認できた．
+\figref{fig::planner::fc}のように，$\varepsilon$の値はアルゴリズム適用前が48.8だったのに対し，右ハンド，左ハンドの順の場合は25.5で，左ハンド，右ハンドの順で狭める場合は19.6となった．これらより，位置・姿勢決め精度の向上を確認できた．
 また，上記の2パターンの狭め方を試したことに関して，多くは同じ結果が得られるが，今回の場合のように精度に差が出る場合があることがあり，複数パターンを試すことの有効性が確認できた．今後，他の狭め方もパターンに含めることで更なる精度向上が望める可能性がある．　\par
 課題点としては，今回用いたハンドの関節角上限が$90^{\circ}$であるため，\figref{fig::planner::afterfclr}，\figref{fig::planner::afterfcrl}の左ハンドの手先リンクのように，対象物まで狭めきれない場合がある．実機を改良して$90^{\circ}$以上の回転を可能にすることで，更なる精度向上が望める．
-\begin{figure}[b]
+\begin{figure}[h]
 \centering
-\includegraphics[width=0.5\hsize]{fig/3-new-planner/before_FC.eps}
+\begin{minipage}{0.33\hsize}
+\includegraphics[width=\hsize]{fig/3-new-planner/rec_before_FC.png}
 \subcaption{Before applying}\label{fig::planner::beforefc}
-
-\begin{minipage}{0.49\hsize}
-\includegraphics[width=0.99\hsize]{fig/3-new-planner/FC_leftright.eps}
+\end{minipage}\hfill
+\begin{minipage}{0.33\hsize}
+\includegraphics[width=\hsize]{fig/3-new-planner/rec_FC_left_right.png}
 \subcaption{left$\rightarrow$right}\label{fig::planner::afterfclr}
 \end{minipage}\hfill
-\begin{minipage}{0.49\hsize}
-\includegraphics[width=0.9\hsize]{fig/3-new-planner/FC_rightleft.eps}
+\begin{minipage}{0.33\hsize}
+\includegraphics[width=\hsize]{fig/3-new-planner/rec_FC_right_left.png}
 \subcaption{right$\rightarrow$left}\label{fig::planner::afterfcrl}
 \end{minipage}
 \caption{The result of applying hand closing algorithm}\label{fig::planner::fc}
@@ -498,7 +506,13 @@ $T= 1.97 > 1.83$なので，$H_0$は棄却され，探索終了条件の緩和�
 結果，位置決め姿勢：$[47.3, -63.8, 3.17, 5.7, -8.5, -77.3]\mathrm{[deg]}$が得られ，評価値$E=0$で，収束度も$e=0$であった．これにより，本最適化手法によって逆探索アルゴリズムの入力に必要な位置決め姿勢を生成できることが確認された．
 
 \subsection{探索結果}\label{subsec::planner::revresult}
+\begin{figure}[b]
+\centering
+\includegraphics[width=0.7\hsize]{fig/3-new-planner/transition_vol.eps}
+\caption{The transition of the size of $\mathcal{C}_{\mathrm{free\_obj}}$}\label{fig::planner::revrrtres}
+\end{figure}
 順探索アルゴリズムと計算時間の比較を行いたいが，問題設定が異なるため直接比較することはできない．そこで，繰り返し回数に対する$\mathcal{C}_{\mathrm{free\_obj}}$の体積の推移を紹介し，その結果をもとに簡易的に順探索アルゴリズムと比較する．以下のようなタスクを設定し，5回探索を行ったときの結果を\figref{fig::planner::revrrtres}に示す．なお，本来は$\mathcal{C}_{\mathrm{free\_obj}}$の体積が閾値$\nu$を超えたときに探索が終了するが，今回は500000回の繰り返し計算を行うと終了するように設定した．ハンド最終姿勢には，前項で算出したハンド姿勢を用いる．
+
 \begin{gather}
 \notag
 \left\{
@@ -511,11 +525,6 @@ $T= 1.97 > 1.83$なので，$H_0$は棄却され，探索終了条件の緩和�
 \right .
 \end{gather}
 
-\begin{figure}[b]
-\centering
-\includegraphics[width=0.7\hsize]{fig/3-new-planner/transition_vol.eps}
-\caption{The transition of the size of $\mathcal{C}_{\mathrm{free\_obj}}$}\label{fig::planner::revrrtres}
-\end{figure}
 順探索アルゴリズムで三角形物体の動作計画を行う時，入力するハンド初期姿勢$C_{\mathrm{free\_obj}}$の点群数は500程度であることが多い．そこで，\figref{fig::planner::revrrtres}において点群数500にボクセル体積$500 \mathrm{[mm^2 \cdot deg]}$をかけた$250000 \mathrm{[mm^2 \cdot deg]}$に到達した時の繰り返し計算回数に注目することで簡易的に比較できる．5回の平均を取ると，繰り返し回数が約245000回の時に到達している．逆探索アルゴリズムでは，繰り返し計算1回にかかる時間は約1[ms]なので，約245[s]と算出される．
 順探索アルゴリズムの結果\tabref{tab::planner::rasterdfs}と計算時間を比較すると，平均値は逆探索アルゴリズムの方が約$31\%$短くなった．
 
@@ -552,7 +561,7 @@ RRT-Connect \cite{kuffner2000}を用いて両側探索アルゴリズムを構�
 \label{fig::planner::rrtconnect}
 \end{figure}
 
-本アルゴリズムの特徴は三つある．一つ目は，探索終了条件を3つ設定していることである．それぞれ，(a)$T_{\mathrm {forward}}$が順探索アルゴリズムの探索終了条件を満たす，(b)$T_{\mathrm {reverse}}$が逆探索アルゴリズムの探索終了条件を満たす，(c)$T_{\mathrm {forward}}$と$T_{\mathrm {reverse}}$が繋がり，結合点間のケージング2条件も満たす，の3つとなっている．なお，(a)の条件で探索が終了した場合は，\ssecref{subsec::planner::formclosure}の位置決め精度向上アルゴリズムを適用する．3つの探索終了条件の内，いずれかを満たせばよいため，順探索アルゴリズム，逆探索アルゴリズムと比べて条件は緩くなっていると言える．二つ目は，手順\ref{algo::planner::biasbegin}から\ref{algo::planner::biasend}にかけて非常に強いバイアスがかかるという点である．スタートからゴール方向へ，ゴールからスタート方向へ進めるだけ進めるというバイアスがかかっているため，順探索アルゴリズムや逆探索アルゴリズムのようなランダムサンプリングに比べて効率的な探索になっている．三つ目は，経路が比較的滑らかなことである．順探索アルゴリズム，逆探索アルゴリズムではランダムに枝を伸ばしていくため，凹凸の多い経路が生成される．このような経路では，マニピュレーションにかかる時間が増加したり，関節部にかかる負荷が大きくなったりといったことが考えられる．一方，本探索手法では手順\ref{algo::planner::proceed}において一直線に枝を伸ばすような探索が行われるので，順探索アルゴリズム，逆探索アルゴリズムに比べて滑らかな経路が生成される．
+本アルゴリズムの特徴は三つある．一つ目は，探索終了条件を3つ設定していることである．それぞれ，(a)$T_{\mathrm {forward}}$が順探索アルゴリズムの探索終了条件を満たす，(b)$T_{\mathrm {reverse}}$が逆探索アルゴリズムの探索終了条件を満たす，(c)$T_{\mathrm {forward}}$と$T_{\mathrm {reverse}}$が繋がり，結合点間のケージング2条件も満たす，の3つとなっている．なお，経路生成後，必要に応じて，\ssecref{subsec::planner::formclosure}の位置決め精度向上アルゴリズムを適用する．3つの探索終了条件の内，いずれかを満たせばよいため，順探索アルゴリズム，逆探索アルゴリズムと比べて条件は緩くなっていると言える．二つ目は，手順\ref{algo::planner::biasbegin}から\ref{algo::planner::biasend}にかけて非常に強いバイアスがかかるという点である．スタートからゴール方向へ，ゴールからスタート方向へ進めるだけ進めるというバイアスがかかっているため，順探索アルゴリズムや逆探索アルゴリズムのようなランダムサンプリングに比べて効率的な探索になっている．三つ目は，経路が比較的滑らかなことである．順探索アルゴリズム，逆探索アルゴリズムではランダムに枝を伸ばしていくため，凹凸の多い経路が生成される．このような経路では，マニピュレーションにかかる時間が増加したり，関節部にかかる負荷が大きくなったりといったことが考えられる．一方，本探索手法では手順\ref{algo::planner::proceed}において一直線に枝を伸ばすような探索が行われるので，順探索アルゴリズム，逆探索アルゴリズムに比べて滑らかな経路が生成される．
 
 \subsection{計算時間の比較}
 両側探索アルゴリズムは，順探索アルゴリズムにマニピュレーション終了状態のハンド姿勢を，逆探索アルゴリズムにマニピュレーション初期状態のハンド姿勢を追加で与え，これら追加情報を活用して探索を効率化するアルゴリズムである．この追加情報によって順探索アルゴリズム，逆探索アルゴリズムそれぞれからどの程度，計算速度が速くなるかを検証する．\par
@@ -575,34 +584,45 @@ L字形物体に対して，タスクを以下のように設定した．20回�
     \centering
     \caption{Comparison of calculation time between forward search, reverse search and bidirectional search for L-Shape object}
     \label{tab::planner::LFB}
-    \begin{tabular}{|c|c|c|c|}
-    \hline
-        ~ & Forward search & Reverse search & Bidirectional search \\ \hline
-        1 & 614.1 [s] & 430.7 [s] & 19.5 [s] \\ \hline
-        2 & 569.2 & 88.6& 85.4 \\ \hline
-        3 & 1097.1 & 104.4 & 11.0 \\ \hline
-        4 & 117.3 & 135.0 & 19.2 \\ \hline
-        5 & 285.8 & 221.1 & 63.5 \\ \hline
-        6 & 176.9 & 98.0 & 26.1 \\ \hline
-        7 & 457.0 & 314.4 & 101.1 \\ \hline
-        8 & 650.1 & 434.3 & 12.3 \\ \hline
-        9 & 1219.7 & 56.8 & 48.1 \\ \hline
-        10 & 2341.8 & 1222.9 & 33.3 \\ \hline
-        11 & 113.7 & 609.1 & 12.2 \\ \hline
-        12 & 2048.0 & 264.6 & 14.9 \\ \hline
-        13 & 939.6 & 741.9 & 52.0 \\ \hline
-        14 & 41.9 & 69.8 & 60.9 \\ \hline
-        15 & 848.5 & 1000.4 & 20.6 \\ \hline
-        16 & 2760.0 & 777.9 & 22.7 \\ \hline
-        17 & 2410.0 & 1134.0 & 8.2 \\ \hline
-        18 & 375.6 & 170.3 & 155.4 \\ \hline
-        19 & 229.4 & 113.5 & 19.2 \\ \hline
+    \begin{tabular}{c|r r r}
+        ~ & 
+        \begin{tabular}{c}
+        Forward search \\ $\mathrm{\, [s]}$
+        \end{tabular}
+        &
+         \begin{tabular}{c}
+        Reverse search \\ $\mathrm{\, [s]}$
+        \end{tabular}
+         & 
+          \begin{tabular}{c}
+        Bidirectional search \\ $\mathrm{\, [s]}$
+        \end{tabular}
+         \\ \hline
+        1 & 614.1 & 430.7& 19.5 \\ 
+        2 & 569.2 & 88.6& 85.4 \\ 
+        3 & 1097.1 & 104.4 & 11.0 \\
+        4 & 117.3 & 135.0 & 19.2 \\
+        5 & 285.8 & 221.1 & 63.5 \\
+        6 & 176.9 & 98.0 & 26.1 \\
+        7 & 457.0 & 314.4 & 101.1 \\
+        8 & 650.1 & 434.3 & 12.3 \\
+        9 & 1219.7 & 56.8 & 48.1 \\
+        10 & 2341.8 & 1222.9 & 33.3 \\
+        11 & 113.7 & 609.1 & 12.2 \\
+        12 & 2048.0 & 264.6 & 14.9 \\
+        13 & 939.6 & 741.9 & 52.0 \\
+        14 & 41.9 & 69.8 & 60.9 \\
+        15 & 848.5 & 1000.4 & 20.6 \\ 
+        16 & 2760.0 & 777.9 & 22.7 \\ 
+        17 & 2410.0 & 1134.0 & 8.2 \\
+        18 & 375.6 & 170.3 & 155.4 \\ 
+        19 & 229.4 & 113.5 & 19.2 \\ 
         20 & 225.4 & 390.67 & 81.5 \\ \hline
-        Average & 877.4 [s]  & 418.9 [s] & 43.4 [s] \\ \hline
-        SD & 850.1 [s] & 372.7 [s] & 38.4 [s] \\ \hline
+        Average & 877.4  & 418.9 & 43.4 \\ \hline
+        SD & 850.1 & 372.7 & 38.4 \\ 
     \end{tabular}
 \end{table}
-\begin{figure}[bt]
+\begin{figure}[hb]
 \centering
 \includegraphics[width=0.5\hsize]{fig/3-new-planner/3_4_1.eps}
 \caption{The box plot comparing calculation time between forward search, reverse search and bidirectional search for L-Shape object}
@@ -763,7 +783,7 @@ $T=4.48 > 1.729$なので，$H_0$は棄却され，両側探索アルゴリズ�
 最後に，任意対象物をマニピュレーションするにあたって，ある程度の知見があり動作計画にかかる時間を重視する場合，両側探索アルゴリズムが適している．他には，経路を見つけやすいという観点から順探索アルゴリズムや逆探索アルゴリズムでは経路を見つけられないような厳しい問題設定に対して動作計画を実行するというような使い方も考えられる．例えば，順探索アルゴリズムでは不可能なくらいハンド初期姿勢における$\mathcal{C}_{\mathrm{free\_obj}}$のサイズを広くとり，ハンド位置決め姿勢への強いバイアスによって経路を見つけるといった使い方が挙げられる．別の使い道としては，すでに生成された動作の再計画が挙げられる．順探索アルゴリズムや逆探索アルゴリズムでは凹凸の多い経路が作られやすく，このような経路ではマニピュレーション時間が長くなる．一方，\secref{sec::planner::connect}で述べた通り，両側探索アルゴリズムでは比較的滑らかな経路が生成されやすい．この特徴を活かして，順探索アルゴリズムや逆探索アルゴリズムでの計画で得られた動作情報をもとに，両側探索アルゴリズムで再計画することにより，滑らかな優れた経路を生成することができる．\par
 
 また，パーツフィーダへ応用した時のシチュエーションを考える．
-例えば，次工程が組み付けやピッキングのような位置決め精度が求められる場合を想定する．現状，\ssecref{subsec::planner::formclosure}の位置決め精度向上アルゴリズムにより得られるハンド姿勢より，人間が与えた姿勢や\ssecref{subsec::planner::revoptimize}の最適姿勢生成アルゴリズムによって得られるハンド姿勢の方が位置決め精度が高い傾向にある．したがって，逆探索アルゴリズムを用いるのが望ましい．両側探索アルゴリズムを用いる手もある．ただ，順探索アルゴリズムの終了条件を満たして動作が生成された場合，位置決め精度が下がる可能性があるため，この終了条件を排した2つの終了条件で計画すべきである．\par
+例えば，次工程が組み付けやピッキングのような位置決め精度が求められる場合を想定する．現状，順探索で得られた最終姿勢のように，位置決めが甘い姿勢に対して，\ssecref{subsec::planner::formclosure}の位置決め精度向上アルゴリズムを適用した際，十分な位置決め精度が得られない場合がある．そのため，人間が与えた姿勢や\ssecref{subsec::planner::revoptimize}の最適姿勢生成アルゴリズムによって得られる姿勢を初期値とする逆探索アルゴリズムを用いるのが望ましい．また，両側探索アルゴリズムを用いる手もある．ただ，順探索アルゴリズムの終了条件を満たして動作が生成された場合，上述の理由で位置決め精度が下がる可能性があるため，この終了条件を排した2つの終了条件で計画すべきである．\par
 また，前工程から流れてくる部品の位置・姿勢のランダムネスが大きい場合を想定する．この場合も，逆探索アルゴリズムか両側探索アルゴリズムが望ましい．上述の通り，逆探索アルゴリズムによって，対象物の様々な位置・姿勢を許容できるハンド姿勢を探索できる．さらに対象物の位置・姿勢を許容したい場合は，両側探索において，ハンド初期姿勢に目的の位置・姿勢許容量を満たすハンド姿勢を与えると良い．強いバイアスにより動作経路が見つかる可能性がある．\par
 他には，流入部品が頻繁に変わる場合を想定する．この場合，各部品に対して位置決め姿勢を用意するのは手間な作業である．そこで，どのような部品形状でもケージングが成立するような初期姿勢を与え，順探索アルゴリズムで計画するのが望ましい．ただ，計画により得られた最終姿勢後に\ssecref{subsec::planner::formclosure}の位置決め精度向上アルゴリズムを適用したとしても，十分位置決めされない場合がある．そのため，次工程が袋詰めや包装のような精度をあまり要求されないようなタスクに限られる．\par
 
